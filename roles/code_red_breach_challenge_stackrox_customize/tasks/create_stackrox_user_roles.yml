@@ -1,0 +1,52 @@
+---
+- name: Create access scope
+  uri:
+    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/simpleaccessscopes"
+    user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
+    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
+    force_basic_auth: true
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      name: "network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}"
+      rules:
+        includedNamespaces:
+        - clusterName: "production"
+          namespaceName: "customers-{{ code_red_breach_challenge_stackrox_customize_username }}"
+    validate_certs: false
+  register: r_as_response
+
+- name: Create access scope role
+  uri:
+    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/roles/network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}"
+    user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
+    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
+    force_basic_auth: true
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      permissionSetId: "{{ code_red_breach_challenge_stackrox_customize_network_graph_viewer_permission_set_id }}"
+      accessScopeId: "{{ r_as_response.json.id }}"
+    validate_certs: false
+
+- name: Create group for user rule
+  uri:
+    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/groups"
+    user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
+    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
+    force_basic_auth: true
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      props:
+        authProviderId: "{{ code_red_breach_challenge_stackrox_customize_auth_provider_id }}"
+        key: name
+        value: "{{ code_red_breach_challenge_stackrox_customize_username }}"
+      roleName: network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}
+    validate_certs: false

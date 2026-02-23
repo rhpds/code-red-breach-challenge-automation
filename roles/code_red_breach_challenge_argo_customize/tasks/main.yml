@@ -1,0 +1,99 @@
+---
+- name: Retrieve Ingress config
+  kubernetes.core.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: Ingress
+    name: cluster
+  register: r_ingress_config
+
+- name: Set Template variables
+  ansible.builtin.set_fact:
+    code_red_breach_challenge_argo_customize_gitea_endpoint: gitea.{{ r_ingress_config.resources[0].spec.domain }}
+    code_red_breach_challenge_argo_customize_argocd_endpoint: argocd-server-{{ code_red_breach_challenge_argo_customize_argo_namespace }}.{{
+      r_ingress_config.resources[0].spec.domain }}
+    code_red_breach_challenge_argo_customize_apps_subdomain: "{{ r_ingress_config.resources[0].spec.domain }}"
+    code_red_breach_challenge_argo_customize_quay_server: quay-{{ guid }}.{{ r_ingress_config.resources[0].spec.domain }}
+    code_red_breach_challenge_argo_customize_stackrox_endpoint: central-{{ code_red_breach_challenge_argo_customize_stackrox_namespace }}.{{ r_ingress_config.resources[0].spec.domain }}
+
+- name: Apply user based templating
+  include_tasks: template_user_resources.yml
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+
+- name: Pause
+  ansible.builtin.pause:
+    minutes: 2
+
+- name: Create leaderboard application
+  include_tasks: apply_leaderboard_templating.yml
+
+- name: Patch ArgoCD to add users
+  kubernetes.core.k8s_json_patch:
+    api_version: argoproj.io/v1beta1
+    kind: ArgoCD
+    namespace: "{{ code_red_breach_challenge_argo_customize_argo_namespace }}"
+    name: openshift-gitops
+    patch:
+      - op: replace
+        path: /spec/rbac/defaultPolicy
+        value: ''
+      - op: replace
+        path: /spec/rbac/policy
+        value: |
+          g, system:cluster-admins, role:admin
+          {% for i in range(1, code_red_breach_challenge_argo_customize_num_users | int + 1) %}
+          p, user{{ i }}, projects, get, {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ i }}, allow
+          p, user{{ i }}, applications, get, {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ i }}/*, allow
+          {% endfor %}
+      - op: replace
+        path: /spec/rbac/scopes
+        value: '[groups]'
+
+- name: Add extraConfig to ArgoCD
+  kubernetes.core.k8s_json_patch:
+    api_version: argoproj.io/v1beta1
+    kind: ArgoCD
+    namespace: "{{ code_red_breach_challenge_argo_customize_argo_namespace }}"
+    name: openshift-gitops
+    patch:
+      - op: add
+        path: /spec/extraConfig
+        value: {}
+
+- name: Patch ArgoCD to add users
+  kubernetes.core.k8s_json_patch:
+    api_version: argoproj.io/v1beta1
+    kind: ArgoCD
+    namespace: "{{ code_red_breach_challenge_argo_customize_argo_namespace }}"
+    name: openshift-gitops
+    patch:
+      - op: add
+        path: /spec/extraConfig/accounts.{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+        value: login
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+  vars:
+    index: "{{ n | int + 1 }}"
+
+- name: Generate HTPassword Hash
+  ansible.builtin.shell:
+    htpasswd -nbBC 10 "" "{{ code_red_breach_challenge_argo_customize_argo_user_password }}" | tr -d ':\n'
+  register: r_htpasswd_hash
+
+- name: Patch ArgoCD user passwords
+  kubernetes.core.k8s_json_patch:
+    api_version: v1
+    kind: Secret
+    namespace: "{{ code_red_breach_challenge_argo_customize_argo_namespace }}"
+    name: argocd-secret
+    patch:
+    - op: add
+      path: /data/accounts.{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}.password
+      value: "{{ r_htpasswd_hash.stdout | b64encode }}"
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+  vars:
+    index: "{{ n | int + 1 }}"

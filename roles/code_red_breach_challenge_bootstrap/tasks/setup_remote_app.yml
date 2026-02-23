@@ -1,0 +1,35 @@
+---
+  - name: Install podman compose and create compose file
+    become: true
+    ansible.builtin.shell: |
+      dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+      dnf install -y python3-dotenv podman-compose
+      cat <<EOF > /root/compose.yml
+      version: "3.8"
+
+      services:
+        ripper:
+          image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
+          container_name: ripper
+          ports:
+            - "8500:8080"
+          environment:
+            - JAVA_APP_JAR=/deployments/quarkus-run.jar
+          restart: unless-stopped
+      EOF
+
+  - name: Create the ripper systemd service
+    become: true
+    ansible.builtin.template:
+      src: ripper-service.yml.j2
+      dest: /etc/systemd/system/ripper.service
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
+
+  - name: Enable ripper systemd service
+    become: true
+    ansible.builtin.service:
+      name: ripper.service
+      enabled: true
+      state: started

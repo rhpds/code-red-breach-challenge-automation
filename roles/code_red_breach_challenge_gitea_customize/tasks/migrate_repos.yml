@@ -1,0 +1,47 @@
+---
+- name: Import global repositories
+  when: not item.per_user | bool
+  uri:
+    url: "https://{{ code_red_breach_challenge_gitea_customize_gitea_endpoint }}/api/v1/repos/migrate"
+    user: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}"
+    password: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}"
+    method: POST
+    force_basic_auth: true
+    validate_certs: false
+    body_format: json
+    status_code: 201
+    headers:
+      Content-Type: application/json
+    body: >-
+      {
+      "clone_addr": "{{ item.url }}",
+      "repo_name": "{{ item.name }}",
+      "repo_owner": "{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}",
+      "private": {{ item.private }}
+      }
+
+- name: Import per user repositories
+  when: item.per_user | bool
+  uri:
+    url: "https://{{ code_red_breach_challenge_gitea_customize_gitea_endpoint }}/api/v1/repos/migrate"
+    user: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}"
+    password: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}"
+    method: POST
+    force_basic_auth: true
+    validate_certs: false
+    body_format: json
+    status_code: 201
+    headers:
+      Content-Type: application/json
+    body: >-
+      {
+      "clone_addr": "{{ item.url }}",
+      "repo_name": "{{ gitea_username }}-{{ item.name }}",
+      "repo_owner": "{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}",
+      "private": {{ item.private }}
+      }
+  loop: "{{ range(0, code_red_breach_challenge_gitea_customize_gitea_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+  vars:
+    gitea_username: "{{ code_red_breach_challenge_gitea_customize_gitea_user_name_base }}{{ n | int + 1 }}"

@@ -1,0 +1,168 @@
+---
+- name: Add {{ code_red_breach_challenge_gitea_customize_lab_username }} as a colaborator to {{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+  uri:
+    url: https://{{ code_red_breach_challenge_gitea_customize_gitea_endpoint }}/api/v1/repos/{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops/collaborators/{{ code_red_breach_challenge_gitea_customize_lab_username }}
+    user: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}"
+    password: "{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}"
+    method: PUT
+    force_basic_auth: true
+    validate_certs: false
+    body_format: json
+    status_code: 204
+    headers:
+      Content-Type: application/json
+    body: >-
+      {
+      "permission": "read"
+      }
+  retries: 6
+  delay: 10
+  register: r_add_collaborator
+  until: r_add_collaborator is not failed
+
+- name: Clone env-gitops
+  ansible.builtin.git:
+    repo: https://{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}:{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}@{{
+          code_red_breach_challenge_gitea_customize_gitea_endpoint }}/{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}/{{
+          code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops.git
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+    single_branch: yes
+    version: main
+
+- name: Fetch values.yaml file from remote host
+  run_once: true
+  ansible.builtin.fetch:
+    src: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops/values.yaml
+    dest: /tmp/dest/values.yaml
+    flat: true
+    fail_on_missing: true
+
+- name: Apply template /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops/values.yaml
+  ansible.builtin.template:
+    src: /tmp/dest/values.yaml
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops/values.yaml
+
+- name: Add new files to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+    cmd: "git add ."
+  ignore_errors: true
+
+- name: Commit changes to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+    cmd: >-
+      git commit -a -m 'Updates for starting scenario.'
+  ignore_errors: true
+
+- name: Push all changes back to the project repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+    cmd: >-
+      git push
+
+- name: Remove /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+  ansible.builtin.file:
+    path: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-env-gitops
+    state: absent
+
+- name: Clone {{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+  ansible.builtin.git:
+    repo: https://{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}:{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}@{{
+          code_red_breach_challenge_gitea_customize_gitea_endpoint }}/{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}/{{
+          code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops.git
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+    single_branch: yes
+    version: main
+
+- name: Fetch values.yaml file from remote host
+  run_once: true
+  ansible.builtin.fetch:
+    src: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops/values.yaml
+    dest: /tmp/dest/values.yaml
+    flat: true
+    fail_on_missing: true
+
+- name: Apply template /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops.git
+  ansible.builtin.template:
+    src: /tmp/dest/values.yaml
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops/values.yaml
+
+- name: Add new files to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+    cmd: "git add ."
+  ignore_errors: true
+
+- name: Commit changes to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+    cmd: >-
+      git commit -a -m 'Updates for starting scenario.'
+  ignore_errors: true
+
+- name: Push all changes back to the project repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+    cmd: >-
+      git push
+
+- name: Remove /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+  ansible.builtin.file:
+    path: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-pipeline-gitops
+    state: absent
+
+- name: Clone {{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+  ansible.builtin.git:
+    repo: https://{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}:{{ code_red_breach_challenge_gitea_customize_gitea_admin_password }}@{{
+          code_red_breach_challenge_gitea_customize_gitea_endpoint }}/{{ code_red_breach_challenge_gitea_customize_gitea_admin_user }}/{{
+          code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops.git
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+    single_branch: yes
+    version: main
+
+- name: Fetch values.yaml file from remote host
+  run_once: true
+  ansible.builtin.fetch:
+    src: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops/values.yaml
+    dest: /tmp/dest/values.yaml
+    flat: true
+    fail_on_missing: true
+
+- name: Apply template /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops.git
+  ansible.builtin.template:
+    src: /tmp/dest/values.yaml
+    dest: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops/values.yaml
+
+- name: Add new files to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+    cmd: "git add ."
+  ignore_errors: true
+
+- name: Commit changes to the repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+    cmd: >-
+      git commit -a -m 'Updates for starting scenario.'
+  ignore_errors: true
+
+- name: Push all changes back to the project repository
+  ansible.builtin.command:
+    chdir: >-
+      /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+    cmd: >-
+      git push
+
+- name: Remove /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+  ansible.builtin.file:
+    path: /tmp/{{ code_red_breach_challenge_gitea_customize_lab_username }}-customers-gitops
+    state: absent

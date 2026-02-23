@@ -1,0 +1,20 @@
+---
+- name: Set job variables
+  ansible.builtin.set_fact:
+    code_red_breach_challenge_bootstrap_app_subdomain: "{{ r_ingress_config.resources[0].spec.domain }}"
+
+- name: Give default SA edit access to ACS namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cluster-role-binding-default-stackrox-edit.yml.j2') | from_yaml }}"
+
+- name: Create bastion ping cronjob
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cronjob-ping-bastion-script.yml.j2') | from_yaml }}"
+    namespace: default
+  loop: "{{ range(0, code_red_breach_challenge_bootstrap_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+  vars:
+    index: "{{ n | int + 1 }}"

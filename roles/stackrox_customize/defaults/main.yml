@@ -1,6 +1,0 @@
----
-stackrox_customize_stackrox_namespace: stackrox
-stackrox_customize_stackrox_admin: admin
-stackrox_customize_num_users: "{{ num_users | default(3) }}"
-stackrox_customize_stackrox_admin_password: "{{ common_password | default('password') }}"
-stackrox_customize_stackrox_user_name_base: user

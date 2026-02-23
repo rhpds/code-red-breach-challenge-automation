@@ -1,0 +1,75 @@
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-bastion
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            cronjob: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-bastion
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: ping-bastion
+            image: registry.redhat.io/openshift4/ose-tools-rhel9@sha256:8037187950e7374a9c9bec4996033c9b24ce374920ef29047d4f63b4c20f3e6b
+            command:
+              - /bin/bash
+              - '-c'
+              - |
+
+                ROX_EXTERNAL_IPS=$(oc get deployment central -n {{ code_red_breach_challenge_bootstrap_rhacs_namespace }} --output json | jq -r '.spec.template.spec.containers[] | select(.name=="central").env[] | select(.name=="ROX_EXTERNAL_IPS").value')
+
+                READY_REPLICAS=$(oc get deployment central -n {{ code_red_breach_challenge_bootstrap_rhacs_namespace }} --output json | jq -r '.status.readyReplicas')
+
+                echo ROX_EXTERNAL_IPS: \'$ROX_EXTERNAL_IPS\'
+
+                echo READY_REPLICAS: \'$READY_REPLICAS\'
+
+                if [ "${ROX_EXTERNAL_IPS}" != "true" ] || [[ ! $READY_REPLICAS =~ ^[0-9]+$ ]] || [ "${READY_REPLICAS}" -lt 1 ]; then
+
+                  echo 'Stackrox not ready.  Exiting...'
+
+                  exit 1
+
+                fi
+
+                HOST={{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-customers-manifests-customers-{{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}.{{ code_red_breach_challenge_bootstrap_app_subdomain }}
+
+                STATUS_CODE_1=$(curl -s -o /dev/null -w "%{http_code}" https://${HOST}/customers)
+
+                if [ "${STATUS_CODE_1}" == "200" ]; then
+
+                  echo 'Endpoint ready.  Initiating remote call...'
+
+                  BASTION_SUBDOMAIN=$(echo {{ code_red_breach_challenge_bootstrap_app_subdomain }} | sed -r 's/([^.]*.){2}//')
+
+                  STATUS_CODE_2=$(curl -s -kv -o /dev/null -w "%{http_code}" https://${HOST}/customers/JKHGFTGTYU/bastion.${BASTION_SUBDOMAIN}:{{ code_red_breach_challenge_bootstrap_remote_ripper_port }})
+
+                  if [ "${STATUS_CODE_2}" == "200" ]; then
+
+                    echo 'Remote call complete'
+
+                  else
+
+                    echo Customers bastion endpoint returned a "${STATUS_CODE_2}" response code.  Exiting...
+
+                    exit 1
+
+                  fi
+
+                else
+
+                  echo Customers app returned a "${STATUS_CODE_1}" response code.  Exiting...
+
+                  exit 1
+
+                fi
+          serviceAccount: default
