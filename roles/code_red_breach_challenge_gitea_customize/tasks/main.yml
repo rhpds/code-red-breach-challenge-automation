@@ -1,16 +1,8 @@
 ---
-- name: Retrieve Ingress config
-  kubernetes.core.k8s_info:
-    api_version: config.openshift.io/v1
-    kind: Ingress
-    name: cluster
-  register: r_ingress_config
-
 - name: Set Template variables
   ansible.builtin.set_fact:
-    code_red_breach_challenge_gitea_customize_gitea_endpoint: gitea.{{ r_ingress_config.resources[0].spec.domain }}
-    code_red_breach_challenge_gitea_customize_apps_subdomain: "{{ r_ingress_config.resources[0].spec.domain }}"
-    code_red_breach_challenge_gitea_customize_quay_server: quay-{{ guid }}.{{ r_ingress_config.resources[0].spec.domain }}
+    code_red_breach_challenge_gitea_customize_gitea_endpoint: gitea.{{ openshift_cluster_ingress_domain }}
+    code_red_breach_challenge_gitea_customize_quay_server: quay-{{ guid }}.{{ openshift_cluster_ingress_domain }}
 
 - name: Import customers-app repository
   include_tasks: migrate_repos.yml

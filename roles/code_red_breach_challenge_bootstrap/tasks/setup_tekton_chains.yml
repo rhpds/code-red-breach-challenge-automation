@@ -2,7 +2,7 @@
 - name: Set quay registry
   ansible.builtin.set_fact:
     code_red_breach_challenge_bootstrap_quay_registry_endpoint: "quay-{{
-      guid }}.{{ r_ingress_config.resources[0].spec.domain }}"
+      guid }}.{{ openshift_cluster_ingress_domain }}"
 
 - name: Install and configure cosign
   ansible.builtin.shell: |

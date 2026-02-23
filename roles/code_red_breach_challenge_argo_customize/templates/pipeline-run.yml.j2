@@ -19,15 +19,15 @@ spec:
     - name: output-image
       value: {{ code_red_breach_challenge_argo_customize_quay_server }}/quayadmin/customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
     - name: sonarqube-host-url
-      value: 'https://sonarqube-sonarqube.{{ code_red_breach_challenge_argo_customize_apps_subdomain }}'
+      value: 'https://sonarqube-sonarqube.{{ openshift_cluster_ingress_domain }}'
     - name: sonarqube-project-key
       value: {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}-customers
     - name: sonarqube-project-secret
       value: customers-sonarqube-secret
     - name: cyclonedx-host-url
-      value: 'https://cyclonedx-bom-repo-server-cyclonedx.{{ code_red_breach_challenge_argo_customize_apps_subdomain }}'
+      value: 'https://cyclonedx-bom-repo-server-cyclonedx.{{ openshift_cluster_ingress_domain }}'
     - name: stackrox-endpoint
-      value: 'central-stackrox.{{ code_red_breach_challenge_argo_customize_apps_subdomain }}:443'
+      value: 'central-stackrox.{{ openshift_cluster_ingress_domain }}:443'
     - name: stackrox-secret
       value: customers-stackrox-token
     - name: git-host
@@ -45,7 +45,7 @@ spec:
     - name: certificate-identity
       value: admin
     - name: oidc-issuer
-      value: 'https://keycloak-rhsso.{{ code_red_breach_challenge_argo_customize_apps_subdomain }}/auth/realms/openshift'
+      value: 'https://keycloak-rhsso.{{ openshift_cluster_ingress_domain }}/auth/realms/openshift'
   pipelineRef:
     name: customers-build
   taskRunTemplate:
