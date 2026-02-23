@@ -73,6 +73,7 @@
   ansible.builtin.shell:
     htpasswd -nbBC 10 "" "{{ code_red_breach_challenge_argo_customize_argo_user_password }}" | tr -d ':\n'
   register: r_htpasswd_hash
+  delegate_to: bastion
 
 - name: Patch ArgoCD user passwords
   kubernetes.core.k8s_json_patch:

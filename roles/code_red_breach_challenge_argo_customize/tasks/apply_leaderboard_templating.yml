@@ -4,6 +4,7 @@
     src: get-cidr.sh
     dest: /tmp/get-cidr.sh
     mode: u+rwx,g+rx,o+rx
+  delegate_to: bastion
 
 - name: Get CIDR value
   ansible.builtin.shell: |
@@ -14,6 +15,7 @@
   - r_cidr.stdout | length > 0
   retries: 15
   delay: 120
+  delegate_to: bastion
 
 - name: Set CIDR value
   ansible.builtin.set_fact:
@@ -26,6 +28,7 @@
     dest: /tmp/leaderboard-gitops
     single_branch: yes
     version: main
+  delegate_to: bastion
 
 - name: Fetch values.yaml file from remote host
   run_once: true
@@ -34,11 +37,13 @@
     dest: /tmp/dest/values.yaml
     flat: true
     fail_on_missing: true
+  delegate_to: bastion
 
 - name: Apply template /tmp/dest/values.yaml
   ansible.builtin.template:
     src: /tmp/dest/values.yaml
     dest: /tmp/leaderboard-gitops/values.yaml
+  delegate_to: bastion
 
 - name: Add new files to the repository
   ansible.builtin.command:
@@ -46,6 +51,7 @@
       /tmp/leaderboard-gitops
     cmd: "git add ."
   ignore_errors: true
+  delegate_to: bastion
 
 - name: Commit changes to the repository
   ansible.builtin.command:
@@ -54,6 +60,7 @@
     cmd: >-
       git commit -a -m 'Updates for starting scenario.'
   ignore_errors: true
+  delegate_to: bastion
 
 - name: Push all changes back to the project repository
   ansible.builtin.command:
@@ -61,6 +68,7 @@
       /tmp/leaderboard-gitops
     cmd: >-
       git push
+  delegate_to: bastion
 
 - name: Create leaderboard application
   kubernetes.core.k8s:

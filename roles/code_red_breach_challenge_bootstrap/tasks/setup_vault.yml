@@ -27,11 +27,13 @@
   delay: 5
   register: r_copy
   until: r_copy is not failed
+  delegate_to: bastion
 
 - name: Get login token
   ansible.builtin.shell: >-
     grep -A 0 root_token /tmp/vault-auto-unseal-keys.txt | sed 's/root_token: //g'
   register: r_token
+  delegate_to: bastion
 
 - name: Set vault token fact
   ansible.builtin.set_fact:
@@ -55,6 +57,7 @@
   until: r_vault_login is not failed
   retries: 30
   delay: 10
+  delegate_to: bastion
 
 - name: Create vault policy
   ansible.builtin.shell: |
@@ -68,6 +71,7 @@
     }} -- bash -c 'echo } >> /tmp/rhdh-policy.hcl'
     oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
     }} -- bash -c 'vault policy write rhdh-policy /tmp/rhdh-policy.hcl'
+  delegate_to: bastion
 
 - name: Enable kubernetes auth
   ansible.builtin.shell: |
@@ -87,6 +91,7 @@
     kubernetes_host="$K8S_HOST" \
     kubernetes_ca_cert="$SA_CA_CRT" \
     issuer="https://kubernetes.default.svc.cluster.local"
+  delegate_to: bastion
 
 - name: Create role and service account authentication
   ansible.builtin.shell: |
@@ -105,7 +110,9 @@
   until: r_create_role is succeeded
   retries: 10
   delay: 5
+  delegate_to: bastion
 
 - name: Enable kv version 2
   ansible.builtin.shell: |
     oc exec vault-0 -n vault -- vault secrets enable -version=2 kv
+  delegate_to: bastion

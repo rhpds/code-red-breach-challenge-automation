@@ -124,3 +124,4 @@
 - name: Delete all stackrox pods
   ansible.builtin.shell: |
     oc delete pods -n {{ code_red_breach_challenge_stackrox_customize_stackrox_namespace }} --all
+  delegate_to: bastion
