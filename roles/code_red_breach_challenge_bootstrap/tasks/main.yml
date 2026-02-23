@@ -1,4 +1,18 @@
 ---
+- name: Check if helm is installed
+  ansible.builtin.command: command -v helm
+  register: git_helm
+  ignore_errors: true
+
+- name: Install helm if not present
+  when: git_helm.rc != 0
+  ansible.builtin.shell: |
+    curl -LO https://get.helm.sh/helm-{{ code_red_breach_challenge_bootstrap_helm_cli_version }}-linux-amd64.tar.gz
+    tar -zxvf helm-{{ code_red_breach_challenge_bootstrap_helm_cli_version }}-linux-amd64.tar.gz
+    mv linux-amd64/helm /usr/local/bin/helm
+  args:
+    chdir: /tmp
+
 - name: Create kube config
   ansible.builtin.shell: |
     oc login -t {{ openshift_cluster_admin_token }} -{{ openshift_api_url }} --insecure-skip-tls-verify

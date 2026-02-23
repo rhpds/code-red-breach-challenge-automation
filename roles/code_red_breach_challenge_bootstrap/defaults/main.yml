@@ -22,3 +22,5 @@ code_red_breach_challenge_bootstrap_rhacs_admin_password: "{{ common_password }}
 code_red_breach_challenge_bootstrap_tpa_namespace: trusted-profile-analyzer
 code_red_breach_challenge_bootstrap_tpa_oidc_client_id: cli
 code_red_breach_challenge_bootstrap_tpa_oidc_client_secret: 5460cc91-4e20-4edd-881c-b15b169f8a79 #notsecret
+
+code_red_breach_challenge_bootstrap_helm_cli_version: v3.18.4
