@@ -1,6 +1,6 @@
 ---
 - name: Get stackrox route
-  k8s_info:
+  kubernetes.core.k8s_info:
     api_version: route.openshift.io/v1
     kind: Route
     namespace: "{{ code_red_breach_challenge_stackrox_customize_stackrox_namespace }}"
