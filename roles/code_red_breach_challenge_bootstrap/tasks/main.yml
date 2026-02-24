@@ -12,6 +12,7 @@
     mv linux-amd64/helm /usr/local/bin/helm
   args:
     chdir: /tmp
+  become: true
 
 - name: Create kube config
   ansible.builtin.shell: |
