@@ -59,60 +59,137 @@
   delay: 10
   delegate_to: bastion
 
-- name: Create vault policy
+- name: Create or update vault policy
   ansible.builtin.shell: |
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- bash -c 'rm -rf /tmp/rhdh-policy.hcl'
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- bash -c 'echo path \"*\" >> /tmp/rhdh-policy.hcl'
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- bash -c 'echo {  capabilities = [\"read\", \"list\"] >> /tmp/rhdh-policy.hcl'
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- bash -c 'echo } >> /tmp/rhdh-policy.hcl'
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- bash -c 'vault policy write rhdh-policy /tmp/rhdh-policy.hcl'
+    cat <<'EOF' | oc exec -i vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      sh -c 'cat > /tmp/rhdh-policy.hcl && vault policy write rhdh-policy /tmp/rhdh-policy.hcl'
+    path "*" {
+      capabilities = ["read", "list"]
+    }
+    EOF
   delegate_to: bastion
+  register: vault_policy_result
+  retries: 5
+  delay: 10
+  until: vault_policy_result.rc == 0
 
-- name: Enable kubernetes auth
+- name: Check if kubernetes auth is enabled in Vault
+  ansible.builtin.shell: |
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault auth list -format=json | jq -e '.["kubernetes/"]'
+  delegate_to: bastion
+  register: vault_k8s_auth_check
+  failed_when: false
+  changed_when: false
+  retries: 3
+  delay: 5
+  until: vault_k8s_auth_check.rc in [0, 1]
+
+- name: Enable kubernetes auth in Vault
+  ansible.builtin.shell: |
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault auth enable kubernetes
+  delegate_to: bastion
+  when: vault_k8s_auth_check.rc != 0
+  register: vault_k8s_auth_enable
+  retries: 3
+  delay: 5
+  until: vault_k8s_auth_enable.rc == 0
+
+- name: Configure kubernetes auth in Vault
   ansible.builtin.shell: |
     export SA_SECRET_NAME=$(oc get secrets -n default --output=json \
-    | jq -r '.items[].metadata | select(.name|startswith("vault-auth-secret")).name')
+      | jq -r '.items[].metadata | select(.name|startswith("vault-auth-secret")).name')
     export SA_JWT_TOKEN=$(oc get secret $SA_SECRET_NAME -n default \
-    --output 'go-template={{ "{{" }} .data.token {{ "}}" }}' | base64 --decode)
+      --output 'go-template={{ "{{" }} .data.token {{ "}}" }}' | base64 --decode)
     export SA_CA_CRT=$(oc config view --raw --minify --flatten \
-    --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
+      --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
     export K8S_HOST=$(oc config view --raw --minify --flatten \
-    --output 'jsonpath={.clusters[].cluster.server}')
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- vault auth enable kubernetes
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- vault write auth/kubernetes/config \
-    token_reviewer_jwt="$SA_JWT_TOKEN" \
-    kubernetes_host="$K8S_HOST" \
-    kubernetes_ca_cert="$SA_CA_CRT" \
-    issuer="https://kubernetes.default.svc.cluster.local"
+      --output 'jsonpath={.clusters[].cluster.server}')
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault write auth/kubernetes/config \
+        token_reviewer_jwt="$SA_JWT_TOKEN" \
+        kubernetes_host="$K8S_HOST" \
+        kubernetes_ca_cert="$SA_CA_CRT" \
+        issuer="https://kubernetes.default.svc.cluster.local"
   delegate_to: bastion
+  register: vault_k8s_auth_config
+  retries: 5
+  delay: 10
+  until: vault_k8s_auth_config.rc == 0
 
-- name: Create role and service account authentication
+- name: Check if rhdh-role exists in Vault
   ansible.builtin.shell: |
-    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace
-    }} -- vault write auth/kubernetes/role/rhdh-role \
-    bound_service_account_names=vault-auth \
-    bound_service_account_namespaces=default \
-    token_policies=rhdh-policy \
-    ttl=160h
+    set -eo pipefail
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault read auth/kubernetes/role/rhdh-role -format=json
+  delegate_to: bastion
+  register: vault_role_check
+  failed_when: false
+  changed_when: false
+  retries: 3
+  delay: 5
+  until: vault_role_check.rc in [0, 2]
+
+- name: Create or update Vault kubernetes role
+  ansible.builtin.shell: |
+    set -eo pipefail
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault write auth/kubernetes/role/rhdh-role \
+        bound_service_account_names=vault-auth \
+        bound_service_account_namespaces=default \
+        token_policies=rhdh-policy \
+        ttl=160h
+  delegate_to: bastion
+  register: vault_role_create
+  retries: 5
+  delay: 5
+  until: vault_role_create is succeeded
+
+- name: Test kubernetes auth login with rhdh-role
+  ansible.builtin.shell: |
+    set -eo pipefail
     export SA_SECRET_NAME=$(oc get secrets -n default --output=json \
-    | jq -r '.items[].metadata | select(.name|startswith("vault-auth-secret")).name')
+      | jq -r '.items[].metadata | select(.name|startswith("vault-auth-secret")).name')
+
+    if [ -z "$SA_SECRET_NAME" ]; then
+      echo "ERROR: vault-auth-secret not found" >&2
+      exit 1
+    fi
+
     export SA_JWT_TOKEN=$(oc get secret $SA_SECRET_NAME -n default \
-    --output 'go-template={{ "{{" }} .data.token {{ "}}" }}' | base64 --decode)
-    oc exec vault-0 -n vault -- vault write auth/kubernetes/login role=rhdh-role jwt=$SA_JWT_TOKEN
-  register: r_create_role
-  until: r_create_role is succeeded
+      --output 'go-template={{ "{{" }} .data.token {{ "}}" }}' | base64 --decode)
+
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault write auth/kubernetes/login role=rhdh-role jwt=$SA_JWT_TOKEN
+  delegate_to: bastion
+  register: vault_login_test
   retries: 10
   delay: 5
-  delegate_to: bastion
+  until: vault_login_test is succeeded
+  changed_when: false
 
-- name: Enable kv version 2
+- name: Check if kv secrets engine is enabled in Vault
   ansible.builtin.shell: |
-    oc exec vault-0 -n vault -- vault secrets enable -version=2 kv
+    set -eo pipefail
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault secrets list -format=json | jq -e '.["kv/"]'
   delegate_to: bastion
+  register: vault_kv_check
+  failed_when: false
+  changed_when: false
+  retries: 3
+  delay: 5
+  until: vault_kv_check.rc in [0, 1]
+
+- name: Enable kv version 2 secrets engine
+  ansible.builtin.shell: |
+    set -eo pipefail
+    oc exec vault-0 -n {{ code_red_breach_challenge_bootstrap_vault_namespace }} -- \
+      vault secrets enable -version=2 kv
+  delegate_to: bastion
+  when: vault_kv_check.rc != 0
+  register: vault_kv_enable
+  retries: 3
+  delay: 5
+  until: vault_kv_enable is succeeded
