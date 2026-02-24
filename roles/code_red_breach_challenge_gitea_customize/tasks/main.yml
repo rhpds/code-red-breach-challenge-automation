@@ -13,7 +13,8 @@
     minutes: 2
 
 - name: Apply user templating
-  include_tasks: apply_user_templating.yml
+  block:
+  - include_tasks: apply_user_templating.yml
   loop: "{{ range(0, code_red_breach_challenge_gitea_customize_gitea_num_users | int, 1) | list }}"
   loop_control:
     loop_var: n
