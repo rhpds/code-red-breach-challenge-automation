@@ -23,4 +23,5 @@
     vars:
       index: "{{ n | int + 1 }}"
       code_red_breach_challenge_gitea_customize_lab_username: "{{ code_red_breach_challenge_gitea_customize_gitea_user_name_base }}{{ index }}"
+      code_red_breach_challenge_gitea_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
   delegate_to: bastion
