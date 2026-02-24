@@ -11,23 +11,23 @@
   set_fact:
     code_red_breach_challenge_stackrox_customize_stackrox_url: https://{{ r_stackrox_route.resources[0].spec.host }}
 
-- name: Create Identity Provider in ACS
-  uri:
-    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/authProviders"
-    user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
-    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
-    force_basic_auth: true
-    method: POST
-    headers:
-      Content-Type: "application/json"
-    body_format: json
-    body:
-      name: "openshift-oauth"
-      type: "openshift"
-      enabled: true
-      active: true
-    validate_certs: false
-  register: r_idp_response
+# - name: Create Identity Provider in ACS
+#   uri:
+#     url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/authProviders"
+#     user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
+#     password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
+#     force_basic_auth: true
+#     method: POST
+#     headers:
+#       Content-Type: "application/json"
+#     body_format: json
+#     body:
+#       name: "openshift-oauth"
+#       type: "openshift"
+#       enabled: true
+#       active: true
+#     validate_certs: false
+#   register: r_idp_response
 
 - name: Set auth provider id
   set_fact:
@@ -44,7 +44,11 @@
     body_format: json
     headers:
       Content-Type: application/json
+    timeout: 60
   register: r_ps_response
+  retries: 5
+  delay: 10
+  until: r_ps_response is succeeded
 
 - name: Set JSON Query (dev)
   set_fact:
