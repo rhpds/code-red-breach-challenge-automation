@@ -35,13 +35,13 @@
 #   ansible.builtin.include_tasks:
 #     file: ./setup_external_secret_entries.yml
 
-- name: Setup Tekton Chains
-  ansible.builtin.include_tasks:
-    file: ./setup_tekton_chains.yml
+# - name: Setup Tekton Chains
+#   ansible.builtin.include_tasks:
+#     file: ./setup_tekton_chains.yml
 
-- name: Setup CycloneDX Repository
-  ansible.builtin.include_tasks:
-    file: ./setup_cyclonedx_repo_server.yml
+# - name: Setup CycloneDX Repository
+#   ansible.builtin.include_tasks:
+#     file: ./setup_cyclonedx_repo_server.yml
 
 - name: Setup remote app
   block:
