@@ -7,6 +7,8 @@
 - name: Import customers-app repository
   include_tasks: migrate_repos.yml
   loop: "{{ code_red_breach_challenge_gitea_customize_gitea_public_repos }}"
+  vars:
+    code_red_breach_challenge_gitea_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
 
 - name: Pause for gitea migration completion
   ansible.builtin.pause:

@@ -19,6 +19,8 @@
 
 - name: Create leaderboard application
   include_tasks: apply_leaderboard_templating.yml
+  vars:
+    code_red_breach_challenge_argo_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
 
 - name: Patch ArgoCD to add users
   kubernetes.core.k8s_json_patch:
