@@ -3,6 +3,7 @@
   ansible.builtin.command: command -v helm
   register: git_helm
   ignore_errors: true
+  delegate_to: bastion
 
 - name: Install helm if not present
   when: git_helm.rc != 0
@@ -13,6 +14,7 @@
   args:
     chdir: /tmp
   become: true
+  delegate_to: bastion
 
 - name: Create kube config
   ansible.builtin.shell: |
