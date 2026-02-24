@@ -16,7 +16,7 @@
 
 - name: Create kube config
   ansible.builtin.shell: |
-    oc login -t {{ openshift_cluster_admin_token }} -{{ openshift_api_url }} --insecure-skip-tls-verify
+    oc login -t {{ openshift_cluster_admin_token }} {{ openshift_api_url }} --insecure-skip-tls-verify
   delegate_to: bastion
 
 - name: Setup Vault
