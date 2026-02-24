@@ -45,7 +45,7 @@ spec:
     - name: certificate-identity
       value: admin
     - name: oidc-issuer
-      value: 'https://keycloak-rhsso.{{ openshift_cluster_ingress_domain }}/auth/realms/openshift'
+      value: 'https://sso.{{ openshift_cluster_ingress_domain }}/realms/sso'
   pipelineRef:
     name: customers-build
   taskRunTemplate:
