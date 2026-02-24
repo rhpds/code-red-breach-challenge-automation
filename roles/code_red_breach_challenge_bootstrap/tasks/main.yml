@@ -19,34 +19,34 @@
     oc login --token {{ openshift_cluster_admin_token }} --server {{ openshift_api_url }} --insecure-skip-tls-verify
   delegate_to: bastion
 
-# - name: Setup Vault
-#   ansible.builtin.include_tasks:
-#     file: ./setup_vault.yml
+- name: Setup Vault
+  ansible.builtin.include_tasks:
+    file: ./setup_vault.yml
 
-# - name: Setup External Secrets Operator
-#   ansible.builtin.include_tasks:
-#     file: ./setup_external_secrets.yml
+- name: Setup External Secrets Operator
+  ansible.builtin.include_tasks:
+    file: ./setup_external_secrets.yml
 
-# - name: Setup Quay
-#   ansible.builtin.include_tasks:
-#     file: ./setup_quay.yml
+- name: Setup Quay
+  ansible.builtin.include_tasks:
+    file: ./setup_quay.yml
 
-# - name: Setup External Secrets Operator
-#   ansible.builtin.include_tasks:
-#     file: ./setup_external_secret_entries.yml
+- name: Setup External Secrets Operator
+  ansible.builtin.include_tasks:
+    file: ./setup_external_secret_entries.yml
 
-# - name: Setup Tekton Chains
-#   ansible.builtin.include_tasks:
-#     file: ./setup_tekton_chains.yml
+- name: Setup Tekton Chains
+  ansible.builtin.include_tasks:
+    file: ./setup_tekton_chains.yml
 
-# - name: Setup CycloneDX Repository
-#   ansible.builtin.include_tasks:
-#     file: ./setup_cyclonedx_repo_server.yml
+- name: Setup CycloneDX Repository
+  ansible.builtin.include_tasks:
+    file: ./setup_cyclonedx_repo_server.yml
 
-# - name: Setup remote app
-#   block:
-#   - ansible.builtin.include_tasks: setup_remote_app.yml
-#   delegate_to: bastion
+- name: Setup remote app
+  block:
+  - ansible.builtin.include_tasks: setup_remote_app.yml
+  delegate_to: bastion
 
 - name: Setup job runner
   ansible.builtin.include_tasks:
