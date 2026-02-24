@@ -15,7 +15,7 @@
      code_red_breach_challenge_bootstrap_quay_registry_endpoint }}
   args:
     chdir: /tmp
-    delegate_to: bastion
+  delegate_to: bastion
 
 - name: Install and configure Tekton Chains
   block:
