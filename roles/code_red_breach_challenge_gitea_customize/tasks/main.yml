@@ -15,10 +15,10 @@
 - name: Apply user templating
   block:
   - include_tasks: apply_user_templating.yml
-  loop: "{{ range(0, code_red_breach_challenge_gitea_customize_gitea_num_users | int, 1) | list }}"
-  loop_control:
-    loop_var: n
-  vars:
-    index: "{{ n | int + 1 }}"
-    code_red_breach_challenge_gitea_customize_lab_username: "{{ code_red_breach_challenge_gitea_customize_gitea_user_name_base }}{{ index }}"
+    loop: "{{ range(0, code_red_breach_challenge_gitea_customize_gitea_num_users | int, 1) | list }}"
+    loop_control:
+      loop_var: n
+    vars:
+      index: "{{ n | int + 1 }}"
+      code_red_breach_challenge_gitea_customize_lab_username: "{{ code_red_breach_challenge_gitea_customize_gitea_user_name_base }}{{ index }}"
   delegate_to: bastion
