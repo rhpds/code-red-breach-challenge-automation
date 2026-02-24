@@ -2,6 +2,7 @@
   - name: Install podman compose and create compose file
     become: true
     ansible.builtin.shell: |
+      dnf install -y podman
       pip3 install podman-compose python-dotenv
       cat <<EOF > /root/compose.yml
       version: "3.8"
