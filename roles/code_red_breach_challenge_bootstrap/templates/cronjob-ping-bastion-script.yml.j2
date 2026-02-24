@@ -41,7 +41,7 @@ spec:
 
                 fi
 
-                HOST={{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-customers-manifests-customers-{{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}.{{ code_red_breach_challenge_bootstrap_app_subdomain }}
+                HOST={{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-customers-manifests-customers-{{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}.{{ openshift_cluster_ingress_domain }}
 
                 STATUS_CODE_1=$(curl -s -o /dev/null -w "%{http_code}" https://${HOST}/customers)
 
@@ -49,7 +49,7 @@ spec:
 
                   echo 'Endpoint ready.  Initiating remote call...'
 
-                  BASTION_SUBDOMAIN=$(echo {{ code_red_breach_challenge_bootstrap_app_subdomain }} | sed -r 's/([^.]*.){2}//')
+                  BASTION_SUBDOMAIN=$(echo {{ openshift_cluster_ingress_domain }} | sed -r 's/([^.]*.){2}//')
 
                   STATUS_CODE_2=$(curl -s -kv -o /dev/null -w "%{http_code}" https://${HOST}/customers/JKHGFTGTYU/bastion.${BASTION_SUBDOMAIN}:{{ code_red_breach_challenge_bootstrap_remote_ripper_port }})
 
