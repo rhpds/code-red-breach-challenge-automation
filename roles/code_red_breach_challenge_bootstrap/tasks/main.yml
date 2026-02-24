@@ -19,13 +19,13 @@
     oc login --token {{ openshift_cluster_admin_token }} --server {{ openshift_api_url }} --insecure-skip-tls-verify
   delegate_to: bastion
 
-- name: Setup Vault
-  ansible.builtin.include_tasks:
-    file: ./setup_vault.yml
+# - name: Setup Vault
+#   ansible.builtin.include_tasks:
+#     file: ./setup_vault.yml
 
-- name: Setup External Secrets Operator
-  ansible.builtin.include_tasks:
-    file: ./setup_external_secrets.yml
+# - name: Setup External Secrets Operator
+#   ansible.builtin.include_tasks:
+#     file: ./setup_external_secrets.yml
 
 - name: Setup Quay
   ansible.builtin.include_tasks:
