@@ -48,7 +48,7 @@
 - name: Setup remote app
   block:
   - ansible.builtin.include_tasks: setup_remote_app.yml
-  delegate_to: ripper-servers
+  delegate_to: ripper
 
 - name: Setup job runner
   ansible.builtin.include_tasks:
