@@ -43,8 +43,7 @@
     file: ./setup_cyclonedx_repo_server.yml
 
 - name: Setup remote app
-  ansible.builtin.include_tasks:
-    file: ./setup_remote_app.yml
+  ansible.builtin.include_tasks: setup_remote_app.yml
   delegate_to: bastion
 
 - name: Setup job runner
