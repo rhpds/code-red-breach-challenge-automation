@@ -37,8 +37,8 @@
     name: ripper
     groups: ripper_servers
     ansible_host: "{{ _ripper_ip }}"
-    ansible_user: cloud-user
-    ansible_ssh_private_key_file: "{{ cnv_ssh_private_key_path }}"
+    ansible_user: "{{ ansible_user }}"
+    ansible_ssh_private_key_file: "{{ ansible_user_ssh_private_key_path }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 
 - name: Test connection to ripper instance
