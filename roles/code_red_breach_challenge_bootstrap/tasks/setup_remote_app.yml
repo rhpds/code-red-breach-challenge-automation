@@ -1,35 +1,84 @@
 ---
-  - name: Install podman compose and create compose file
-    become: true
-    ansible.builtin.shell: |
-      dnf install -y podman python3-pip
-      pip3 install podman-compose python-dotenv
-      cat <<EOF > /root/compose.yml
-      version: "3.8"
+- name: Add ripper instance to inventory
+  module_defaults:
+    group/k8s:
+      host: "{{ sandbox_openshift_api_url }}"
+      api_key: "{{ sandbox_openshift_api_key }}"
+      validate_certs: false
+  block:
+    - name: Get ripper VM service information
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Service
+        name: ripper
+        namespace: "{{ cnv_instances_passthrough_namespace | default('default') }}"
+      register: r_ripper_service
+      until: r_ripper_service.resources | length > 0
+      retries: 30
+      delay: 10
 
-      services:
-        ripper:
-          image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
-          container_name: ripper
-          ports:
-            - "8500:8080"
-          environment:
-            - JAVA_APP_JAR=/deployments/quarkus-run.jar
-          restart: unless-stopped
-      EOF
+    - name: Extract ripper service cluster IP
+      ansible.builtin.set_fact:
+        _ripper_ip: "{{ r_ripper_service.resources[0].spec.clusterIP }}"
 
-  - name: Create the ripper systemd service
-    become: true
-    ansible.builtin.template:
-      src: ripper-service.yml.j2
-      dest: /etc/systemd/system/ripper.service
-      owner: root
-      group: root
-      mode: u=rw,g=r,o=r
+    - name: Display ripper IP
+      ansible.builtin.debug:
+        msg: "Ripper instance IP: {{ _ripper_ip }}"
 
-  - name: Enable ripper systemd service
-    become: true
-    ansible.builtin.service:
-      name: ripper.service
-      enabled: true
-      state: started
+- name: Wait for SSH to be available on ripper
+  ansible.builtin.wait_for:
+    host: "{{ _ripper_ip }}"
+    port: 22
+    timeout: 300
+    state: started
+
+- name: Add ripper instance to ansible inventory
+  ansible.builtin.add_host:
+    name: ripper
+    groups: ripper_servers
+    ansible_host: "{{ _ripper_ip }}"
+    ansible_user: cloud-user
+    ansible_ssh_private_key_file: "{{ cnv_ssh_private_key_path }}"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+- name: Test connection to ripper instance
+  ansible.builtin.ping:
+  delegate_to: ripper
+
+- name: Install podman compose and create compose file
+  become: true
+  ansible.builtin.shell: |
+    dnf install -y podman python3-pip
+    pip3 install podman-compose python-dotenv
+    cat <<EOF > /root/compose.yml
+    version: "3.8"
+
+    services:
+      ripper:
+        image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
+        container_name: ripper
+        ports:
+          - "8500:8080"
+        environment:
+          - JAVA_APP_JAR=/deployments/quarkus-run.jar
+        restart: unless-stopped
+    EOF
+  delegate_to: ripper
+
+- name: Create the ripper systemd service
+  become: true
+  ansible.builtin.template:
+    src: ripper-service.yml.j2
+    dest: /etc/systemd/system/ripper.service
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  delegate_to: ripper
+
+- name: Enable ripper systemd service
+  become: true
+  ansible.builtin.service:
+    name: ripper.service
+    enabled: true
+    state: started
+  delegate_to: ripper
