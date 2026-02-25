@@ -23,7 +23,7 @@
   ansible.builtin.add_host:
     name: ripper
     groups: ripper_servers
-    ansible_host: "10.128.43.58"
+    ansible_host: "{{ _ripper_ip }}"
     ansible_user: cloud-user
     ansible_ssh_private_key_file: /tmp/cnv_instance_key
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
