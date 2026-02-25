@@ -35,44 +35,48 @@
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
   delegate_to: bastion
 
-- name: Test connection to ripper
-  ansible.builtin.ping:
-  delegate_to: ripper
+- block:
+  - name: Test connection to ripper
+    ansible.builtin.ping:
+    delegate_to: ripper
 
-- name: Install podman compose and create compose file
-  become: true
-  ansible.builtin.shell: |
-    dnf install -y podman python3-pip
-    pip3 install podman-compose python-dotenv
-    cat <<EOF > /root/compose.yml
-    version: "3.8"
+  - name: Install podman compose and create compose file
+    become: true
+    ansible.builtin.shell: |
+      dnf install -y podman python3-pip
+      pip3 install podman-compose python-dotenv
+      cat <<EOF > /root/compose.yml
+      version: "3.8"
 
-    services:
-      ripper:
-        image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
-        container_name: ripper
-        ports:
-          - "8500:8080"
-        environment:
-          - JAVA_APP_JAR=/deployments/quarkus-run.jar
-        restart: unless-stopped
-    EOF
-  delegate_to: ripper
+      services:
+        ripper:
+          image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
+          container_name: ripper
+          ports:
+            - "8500:8080"
+          environment:
+            - JAVA_APP_JAR=/deployments/quarkus-run.jar
+          restart: unless-stopped
+      m
+    delegate_to: ripper
 
-- name: Create the ripper systemd service
-  become: true
-  ansible.builtin.template:
-    src: ripper-service.yml.j2
-    dest: /etc/systemd/system/ripper.service
-    owner: root
-    group: root
-    mode: u=rw,g=r,o=r
-  delegate_to: ripper
+  - name: Create the ripper systemd service
+    become: true
+    ansible.builtin.template:
+      src: ripper-service.yml.j2
+      dest: /etc/systemd/system/ripper.service
+      owner: root
+      group: root
+      mode: u=rw,g=r,o=r
+    delegate_to: ripper
 
-- name: Enable ripper systemd service
-  become: true
-  ansible.builtin.service:
-    name: ripper.service
-    enabled: true
-    state: started
-  delegate_to: ripper
+  - name: Enable ripper systemd service
+    become: true
+    ansible.builtin.service:
+      name: ripper.service
+      enabled: true
+      state: started
+    delegate_to: ripper
+    
+  environment:
+    ANSIBLE_HOST_KEY_CHECKING: "False"
