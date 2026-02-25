@@ -1,0 +1,12 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}-pod-rolebinding
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}-terminal

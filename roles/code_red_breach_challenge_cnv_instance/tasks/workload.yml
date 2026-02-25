@@ -1,0 +1,22 @@
+---
+- name: Generate SSH key pair for CNV instance access
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    generate_ssh_key: true
+    ssh_key_type: rsa
+    ssh_key_bits: 2048
+    ssh_key_file: "~/.ssh/cnv_instance_key"
+    ssh_key_comment: "CNV Instance Access"
+  register: bastion_ssh_key_result
+  delegate_to: bastion
+
+- name: Read the generated public key
+  ansible.builtin.slurp:
+    src: "~/.ssh/cnv_instance_key.pub"
+  register: cnv_public_key_content
+  delegate_to: bastion
+
+- name: Set public key as fact
+  ansible.builtin.set_fact:
+    ansible_user_ssh_public_key: "{{ cnv_public_key_content.content | b64decode | trim }}"
+    ansible_user_ssh_private_key_path: "~/.ssh/cnv_instance_key"
