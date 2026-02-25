@@ -9,18 +9,27 @@
   ansible.builtin.set_fact:
     _ripper_ip: "{{ r_ripper_getent.stdout.split()[0] }}"
 
+- name: Copy and fix SSH key permissions
+  ansible.builtin.copy:
+    src: "{{ cloud_user_ssh_private_key_path }}"
+    dest: /tmp/cnv_instance_key
+    owner: "{{ ansible_user }}"
+    mode: '0600'
+    remote_src: true
+  delegate_to: bastion
+  become: true
+
 - name: Add ripper instance to ansible inventory
   ansible.builtin.add_host:
     name: ripper
     groups: ripper_servers
-    ansible_host: "{{ _ripper_ip }}"
+    ansible_host: "10.128.43.58"
     ansible_user: cloud-user
-    ansible_ssh_private_key_file: "{{ cloud_user_ssh_private_key_path }}"
+    ansible_ssh_private_key_file: /tmp/cnv_instance_key
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-  become: true
   delegate_to: bastion
 
-- name: Test connection to ripper instance
+- name: Test connection to ripper
   ansible.builtin.ping:
   delegate_to: ripper
 

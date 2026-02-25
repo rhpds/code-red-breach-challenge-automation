@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-bastion
+  name: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-ripper
 spec:
   schedule: "*/5 * * * *"
   concurrencyPolicy: Forbid
@@ -14,11 +14,11 @@ spec:
       template:
         metadata:
           labels:
-            cronjob: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-bastion
+            cronjob: {{ code_red_breach_challenge_bootstrap_user_name_base }}{{ index }}-ping-ripper
         spec:
           restartPolicy: Never
           containers:
-          - name: ping-bastion
+          - name: ping-ripper
             image: registry.redhat.io/openshift4/ose-tools-rhel9@sha256:8037187950e7374a9c9bec4996033c9b24ce374920ef29047d4f63b4c20f3e6b
             command:
               - /bin/bash
@@ -49,9 +49,7 @@ spec:
 
                   echo 'Endpoint ready.  Initiating remote call...'
 
-                  BASTION_SUBDOMAIN=$(echo {{ openshift_cluster_ingress_domain }} | sed -r 's/([^.]*.){2}//')
-
-                  STATUS_CODE_2=$(curl -s -kv -o /dev/null -w "%{http_code}" https://${HOST}/customers/JKHGFTGTYU/bastion.${BASTION_SUBDOMAIN}:{{ code_red_breach_challenge_bootstrap_remote_ripper_port }})
+                  STATUS_CODE_2=$(curl -s -kv -o /dev/null -w "%{http_code}" https://${HOST}/customers/JKHGFTGTYU/ripper.{{ guid }}.{{ sandbox_openshift_apps_domain }})
 
                   if [ "${STATUS_CODE_2}" == "200" ]; then
 
