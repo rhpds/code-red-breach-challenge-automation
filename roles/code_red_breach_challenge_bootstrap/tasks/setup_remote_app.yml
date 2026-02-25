@@ -5,9 +5,9 @@
     kind: Service
     name: ripper
     namespace: "{{ cnv_instances_passthrough_namespace | default('default') }}"
-  host: "{{ sandbox_openshift_api_url }}"
-  api_key: "{{ sandbox_openshift_api_key }}"
-  validate_certs: false
+    host: "{{ sandbox_openshift_api_url }}"
+    api_key: "{{ sandbox_openshift_api_key }}"
+    validate_certs: false
   register: r_ripper_service
   until:
   - r_ripper_service.resources is defined
