@@ -17,7 +17,7 @@
 - name: Copy and fix SSH key permissions
   ansible.builtin.copy:
     src: "{{ cloud_user_ssh_private_key_path }}"
-    dest: /tmp/cnv_instance_key
+    dest: /tmp/id_rsa
     owner: "{{ ansible_user }}"
     mode: '0600'
     remote_src: true
@@ -31,7 +31,7 @@
     ansible_host: "{{ bastion_ansible_host }}"
     ansible_port: "{{ _ripper_ssh_port }}"
     ansible_user: cloud-user
-    ansible_ssh_private_key_file: /tmp/cnv_instance_key
+    ansible_ssh_private_key_file: /tmp/id_rsa
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
   delegate_to: bastion
 
@@ -77,6 +77,6 @@
       enabled: true
       state: started
     delegate_to: ripper
-    
+
   environment:
     ANSIBLE_HOST_KEY_CHECKING: "False"

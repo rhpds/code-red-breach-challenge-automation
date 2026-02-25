@@ -5,7 +5,7 @@
     generate_ssh_key: true
     ssh_key_type: rsa
     ssh_key_bits: 2048
-    ssh_key_file: "~/.ssh/cnv_instance_key"
+    ssh_key_file: "~/.ssh/id_rsa"
     ssh_key_comment: "CNV Instance Access"
   register: bastion_ssh_key_result
   become: true
@@ -14,7 +14,7 @@
 
 - name: Read the generated public key
   ansible.builtin.slurp:
-    src: "~/.ssh/cnv_instance_key.pub"
+    src: "~/.ssh/id_rsa.pub"
   register: cnv_public_key_content
   become: true
   become_user: cloud-user
@@ -23,4 +23,4 @@
 - name: Set public key as fact
   ansible.builtin.set_fact:
     cloud_user_ssh_public_key: "{{ cnv_public_key_content.content | b64decode | trim }}"
-    cloud_user_ssh_private_key_path: "/home/cloud-user/.ssh/cnv_instance_key"
+    cloud_user_ssh_private_key_path: "/home/cloud-user/.ssh/id_rsa"
