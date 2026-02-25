@@ -8,12 +8,16 @@
     ssh_key_file: "~/.ssh/cnv_instance_key"
     ssh_key_comment: "CNV Instance Access"
   register: bastion_ssh_key_result
+  become: true
+  become_user: cloud-user
   delegate_to: bastion
 
 - name: Read the generated public key
   ansible.builtin.slurp:
     src: "~/.ssh/cnv_instance_key.pub"
   register: cnv_public_key_content
+  become: true
+  become_user: cloud-user
   delegate_to: bastion
 
 - name: Set public key as fact

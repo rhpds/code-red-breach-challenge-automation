@@ -1,29 +1,27 @@
 ---
-- name: Add ripper instance to inventory
-  module_defaults:
-    group/k8s:
-      host: "{{ sandbox_openshift_api_url }}"
-      api_key: "{{ sandbox_openshift_api_key }}"
-      validate_certs: false
-  block:
-    - name: Get ripper VM service information
-      kubernetes.core.k8s_info:
-        api_version: v1
-        kind: Service
-        name: ripper
-        namespace: "{{ cnv_instances_passthrough_namespace | default('default') }}"
-      register: r_ripper_service
-      until: r_ripper_service.resources | length > 0
-      retries: 30
-      delay: 10
+- name: Get ripper VM service information
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Service
+    name: ripper
+    namespace: "{{ cnv_instances_passthrough_namespace | default('default') }}"
+  host: "{{ sandbox_openshift_api_url }}"
+  api_key: "{{ sandbox_openshift_api_key }}"
+  validate_certs: false
+  register: r_ripper_service
+  until:
+  - r_ripper_service.resources is defined
+  - r_ripper_service.resources | length > 0
+  retries: 30
+  delay: 10
 
-    - name: Extract ripper service cluster IP
-      ansible.builtin.set_fact:
-        _ripper_ip: "{{ r_ripper_service.resources[0].spec.clusterIP }}"
+- name: Extract ripper service cluster IP
+  ansible.builtin.set_fact:
+    _ripper_ip: "{{ r_ripper_service.resources[0].spec.clusterIP }}"
 
-    - name: Display ripper IP
-      ansible.builtin.debug:
-        msg: "Ripper instance IP: {{ _ripper_ip }}"
+- name: Display ripper IP
+  ansible.builtin.debug:
+    msg: "Ripper instance IP: {{ _ripper_ip }}"
 
 - name: Wait for SSH to be available on ripper
   ansible.builtin.wait_for:
