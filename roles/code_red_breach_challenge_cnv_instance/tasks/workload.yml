@@ -23,4 +23,4 @@
 - name: Set public key as fact
   ansible.builtin.set_fact:
     cloud_user_ssh_public_key: "{{ cnv_public_key_content.content | b64decode | trim }}"
-    cloud_user_ssh_private_key_path: "~/.ssh/cnv_instance_key"
+    cloud_user_ssh_private_key_path: "/home/cloud-user/.ssh/cnv_instance_key"
