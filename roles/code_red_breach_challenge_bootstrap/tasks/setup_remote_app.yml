@@ -1,34 +1,13 @@
 ---
-- name: Get ripper VM service information
-  kubernetes.core.k8s_info:
-    api_version: v1
-    kind: Service
-    name: ripper
-    namespace: "{{ cnv_instances_passthrough_namespace | default('default') }}"
-    host: "{{ sandbox_openshift_api_url }}"
-    api_key: "{{ sandbox_openshift_api_key }}"
-    validate_certs: false
-  register: r_ripper_service
-  until:
-  - r_ripper_service.resources is defined
-  - r_ripper_service.resources | length > 0
-  retries: 30
-  delay: 10
+- name: Get ripper IP address
+  ansible.builtin.command: getent hosts ripper
+  register: r_ripper_getent
+  delegate_to: bastion
+  changed_when: false
 
-- name: Extract ripper service cluster IP
+- name: Set ripper IP
   ansible.builtin.set_fact:
-    _ripper_ip: "{{ r_ripper_service.resources[0].spec.clusterIP }}"
-
-- name: Display ripper IP
-  ansible.builtin.debug:
-    msg: "Ripper instance IP: {{ _ripper_ip }}"
-
-- name: Wait for SSH to be available on ripper
-  ansible.builtin.wait_for:
-    host: "{{ _ripper_ip }}"
-    port: 22
-    timeout: 300
-    state: started
+    _ripper_ip: "{{ r_ripper_getent.stdout.split()[0] }}"
 
 - name: Add ripper instance to ansible inventory
   ansible.builtin.add_host:
