@@ -8,11 +8,11 @@
     host: "{{ sandbox_openshift_api_url }}"
     api_key: "{{ sandbox_openshift_api_key }}"
     validate_certs: false
-  register: ripper_ssh_service
+  register: r_ripper_ssh_service
 
 - name: Set ripper IP
   ansible.builtin.set_fact:
-    _ripper_ssh_port: "{{ ripper_ssh_service.resources[0].spec.ports[0].nodePort | default(0) }}"
+    _ripper_ssh_port: "{{ r_ripper_ssh_service.resources[0].spec.ports[0].nodePort | default(0) }}"
 
 - name: Copy and fix SSH key permissions
   ansible.builtin.copy:
