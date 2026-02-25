@@ -1,13 +1,18 @@
 ---
-- name: Get ripper IP address
-  ansible.builtin.command: getent hosts ripper
-  register: r_ripper_getent
-  delegate_to: bastion
-  changed_when: false
+- name: Get ripper-ssh service
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Service
+    name: ripper-ssh
+    namespace: "{{ sandbox_openshift_namespace }}"
+    host: "{{ sandbox_openshift_api_url }}"
+    api_key: "{{ sandbox_openshift_api_key }}"
+    validate_certs: false
+  register: ripper_ssh_service
 
 - name: Set ripper IP
   ansible.builtin.set_fact:
-    _ripper_ip: "{{ r_ripper_getent.stdout.split()[0] }}"
+    _ripper_ssh_port: "{{ ripper_ssh_service.resources[0].spec.ports[0].nodePort | default(0) }}"
 
 - name: Copy and fix SSH key permissions
   ansible.builtin.copy:
@@ -23,7 +28,8 @@
   ansible.builtin.add_host:
     name: ripper
     groups: ripper_servers
-    ansible_host: "{{ _ripper_ip }}"
+    ansible_host: "{{ bastion_ansible_host }}"
+    ansible_port: "{{ _ripper_ssh_port }}"
     ansible_user: cloud-user
     ansible_ssh_private_key_file: /tmp/cnv_instance_key
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
