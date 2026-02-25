@@ -57,7 +57,7 @@
           environment:
             - JAVA_APP_JAR=/deployments/quarkus-run.jar
           restart: unless-stopped
-      m
+      EOF
     delegate_to: ripper
 
   - name: Create the ripper systemd service
