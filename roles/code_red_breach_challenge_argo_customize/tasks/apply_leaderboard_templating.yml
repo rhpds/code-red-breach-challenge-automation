@@ -13,7 +13,7 @@
   until:
   - r_cidr is not failed
   - r_cidr.stdout | length > 0
-  retries: 15
+  retries: 30
   delay: 120
   delegate_to: bastion
 
