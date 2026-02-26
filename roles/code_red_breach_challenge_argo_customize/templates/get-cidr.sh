@@ -22,7 +22,7 @@ if [ ! -z "${SUCCEEDED_JOB}" ]; then
   fi
 
   CIDR=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_stackrox_admin_user }}:{{ code_red_breach_challenge_argo_customize_stackrox_admin_password }} https://{{
-  code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/networkgraph/cluster/${CLUSTER_ID}/externalentities/flows/${DEPLOYMENT_ID} | jq -r '.flows[] | select(.props.dstEntity.type == "EXTERNAL_SOURCE").props.dstEntity.externalSource.cidr')
+  code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/networkgraph/cluster/${CLUSTER_ID}/externalentities/flows/${DEPLOYMENT_ID} | jq -r '.flows[] | select(.props.dstEntity.type == "EXTERNAL_SOURCE" and .props.l4protocol == "L4_PROTOCOL_TCP").props.dstEntity.externalSource.cidr')
 
   if [ ! -z "${CIDR}" ]; then
 
