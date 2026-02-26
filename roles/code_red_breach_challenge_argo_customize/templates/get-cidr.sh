@@ -1,4 +1,4 @@
-SUCCEEDED_JOB=$(oc get job -l cronjob={{ code_red_breach_challenge_argo_customize_gitea_user_name_base }}1-ping-bastion -n default --ignore-not-found=true -o=jsonpath='{range .items[?(@.status.succeeded==1)]}{.metadata.name}{"\n"}{end}')
+SUCCEEDED_JOB=$(oc get job -l cronjob={{ code_red_breach_challenge_argo_customize_gitea_user_name_base }}1-ping-ripper -n default --ignore-not-found=true -o=jsonpath='{range .items[?(@.status.succeeded==1)]}{.metadata.name}{"\n"}{end}')
 
 if [ ! -z "${SUCCEEDED_JOB}" ]; then
 
