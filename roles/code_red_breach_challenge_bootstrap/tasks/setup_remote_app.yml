@@ -18,6 +18,7 @@
   ansible.builtin.fetch:
     src: "{{ cloud_user_ssh_private_key_path }}"
     dest: /tmp/id_rsa
+    flat: true
   delegate_to: bastion
   become: true
 
