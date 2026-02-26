@@ -24,7 +24,7 @@
 - name: Fix SSH key permissions
   ansible.builtin.file:
     path: /tmp/id_rsa
-    mode: 0600"
+    mode: "0600"
 
 - name: Add ripper instance to ansible inventory
   ansible.builtin.add_host:
