@@ -14,22 +14,17 @@
   ansible.builtin.set_fact:
     _ripper_ssh_port: "{{ r_ripper_ssh_service.resources[0].spec.ports[0].nodePort | default(0) }}"
 
-- name: Copy and fix SSH key permissions
-  ansible.builtin.copy:
-    src: "{{ cloud_user_ssh_private_key_path }}"
-    dest: /tmp/id_rsa
-    owner: "{{ ansible_user }}"
-    mode: '0600'
-    remote_src: true
-  delegate_to: bastion
-  become: true
-
-- name: Copy and fix SSH key permissions
+- name: Fetch SSH key from bastion
   ansible.builtin.fetch:
     src: "{{ cloud_user_ssh_private_key_path }}"
     dest: /tmp/id_rsa
   delegate_to: bastion
   become: true
+
+- name: Fix SSH key permissions
+  ansible.builtin.file:
+    path: /tmp/id_rsa
+    mode: 0600"
 
 - name: Add ripper instance to ansible inventory
   ansible.builtin.add_host:
