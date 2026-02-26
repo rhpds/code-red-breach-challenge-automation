@@ -7,4 +7,4 @@ data:
   runtime_config.yaml: |
     networking:
       externalIps:
-        enabled: ENABLED
+        enable: true
