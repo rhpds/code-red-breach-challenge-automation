@@ -4,3 +4,6 @@ code_red_breach_challenge_stackrox_customize_stackrox_admin: admin
 code_red_breach_challenge_stackrox_customize_num_users: "{{ num_users | default(3) }}"
 code_red_breach_challenge_stackrox_customize_stackrox_admin_password: "{{ common_password | default('password') }}"
 code_red_breach_challenge_stackrox_customize_stackrox_user_name_base: user
+code_red_breach_challenge_stackrox_customize_stackrox_roxctl_version: 4.9.3
+code_red_breach_challenge_stackrox_customize_stackrox_roxctl_platform: Linux
+code_red_breach_challenge_stackrox_customize_stackrox_roxctl_test_image: quay.io/fedora/fedora:latest

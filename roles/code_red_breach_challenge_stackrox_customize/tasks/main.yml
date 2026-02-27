@@ -9,6 +9,7 @@
 
 - name: Set stackrox url
   set_fact:
+    code_red_breach_challenge_stackrox_customize_stackrox_endpoint: "{{ r_stackrox_route.resources[0].spec.host }}:443"
     code_red_breach_challenge_stackrox_customize_stackrox_url: https://{{ r_stackrox_route.resources[0].spec.host }}
 
 - name: Create Identity Provider in ACS
@@ -124,3 +125,6 @@
   ansible.builtin.shell: |
     oc delete pods -n {{ code_red_breach_challenge_stackrox_customize_stackrox_namespace }} --all
   delegate_to: bastion
+
+- name: Test image scan for vulnerability download completion
+  include_tasks: ./vulnerability_scan_test.yml
