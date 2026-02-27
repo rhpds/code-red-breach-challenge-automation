@@ -22,7 +22,7 @@ EXTERNAL_ENTITY_ID=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_sta
   head -1)
 
 if [ -z "${EXTERNAL_ENTITY_ID}" ]; then
-  echo "Failed to get external entity ID from anomalous or baseline"
+  echo "Failed to get external entity ID from anomolous or baseline"
   exit 1
 fi
 
