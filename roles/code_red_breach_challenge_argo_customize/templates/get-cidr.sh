@@ -40,6 +40,6 @@ fi
 if [ ! -z "${CIDR}" ]; then
   echo $CIDR
 else
-  echo "Failed to get CIDR"
+  echo "Failed to get CIDR from external entity ID: ${EXTERNAL_ENTITY_ID}"
   exit 1
 fi
