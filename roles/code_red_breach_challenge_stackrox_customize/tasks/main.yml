@@ -88,11 +88,6 @@
     index: "{{ n | int + 1 }}"
     code_red_breach_challenge_stackrox_customize_username: "{{ code_red_breach_challenge_stackrox_customize_stackrox_user_name_base }}{{ index }}"
 
-- name: Apply collector config
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('file', 'collector-config.yml') | from_yaml }}"
-
 - name: Patch stackrox operator (1)
   kubernetes.core.k8s_json_patch:
     api_version: platform.stackrox.io/v1alpha1
