@@ -30,7 +30,7 @@ CIDR=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_stackrox_admin_us
   "https://{{ code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/networkgraph/cluster/${CLUSTER_ID}/externalentities/${EXTERNAL_ENTITY_ID}/flows" | \
   jq -r '.entity.externalSource.cidr')
 
-if [ -z "${CIDR}" || "${CIDR}" == "null" ]; then
+if [ -z "${CIDR}" ] || [ "${CIDR}" == "null" ]; then
   ENTITY_SUFFIX=$(echo "${EXTERNAL_ENTITY_ID}" | grep -o '__.*')
   CIDR=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_stackrox_admin_user }}:{{ code_red_breach_challenge_argo_customize_stackrox_admin_password }} \
   "https://{{ code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/networkgraph/cluster/${CLUSTER_ID}/externalentities/${ENTITY_SUFFIX}/flows" | \
