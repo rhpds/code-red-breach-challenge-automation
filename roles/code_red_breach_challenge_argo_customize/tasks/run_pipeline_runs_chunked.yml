@@ -1,10 +1,11 @@
 ---
+# Run pipeline runs in chunks
 - name: Create pipeline runs for chunk starting at user {{ chunk_start + 1 }}
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'pipeline-run.yml.j2') | from_yaml }}"
     namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
-  loop: "{{ range(chunk_start, [chunk_start + {{ code_red_breach_challenge_argo_customize_pipeline_chunk_size }}, code_red_breach_challenge_argo_customize_num_users | int] | min, 1) | list }}"
+  loop: "{{ range(chunk_start, [chunk_start + code_red_breach_challenge_argo_customize_pipeline_chunk_size | int, code_red_breach_challenge_argo_customize_num_users | int] | min, 1) | list }}"
   loop_control:
     loop_var: n
   vars:
@@ -23,4 +24,4 @@
     - r_pipelinerun.resources[0].status is defined
     - r_pipelinerun.resources[0].status.completionTime is defined
   vars:
-    last_user_index: "{{ [chunk_start + {{ code_red_breach_challenge_argo_customize_pipeline_chunk_size }}, code_red_breach_challenge_argo_customize_num_users | int] | min }}"
+    last_user_index: "{{ [chunk_start + code_red_breach_challenge_argo_customize_pipeline_chunk_size | int, code_red_breach_challenge_argo_customize_num_users | int] | min }}"
