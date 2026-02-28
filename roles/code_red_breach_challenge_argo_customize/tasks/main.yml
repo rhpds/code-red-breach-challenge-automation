@@ -17,6 +17,14 @@
   ansible.builtin.pause:
     minutes: 2
 
+- name: Run pipeline runs in chunks
+  include_tasks: run_pipeline_runs_chunked.yml
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, code_red_breach_challenge_argo_customize_pipeline_chunk_size | int) | list }}"
+  loop_control:
+    loop_var: chunk_start
+  vars:
+    code_red_breach_challenge_argo_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
+
 - name: Create leaderboard application
   include_tasks: apply_leaderboard_templating.yml
   vars:
@@ -92,9 +100,3 @@
     loop_var: n
   vars:
     index: "{{ n | int + 1 }}"
-
-- name: Run pipeline runs in chunks
-  include_tasks: run_pipeline_runs_chunked.yml
-  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, code_red_breach_challenge_argo_customize_pipeline_chunk_size | int) | list }}"
-  loop_control:
-    loop_var: chunk_start
