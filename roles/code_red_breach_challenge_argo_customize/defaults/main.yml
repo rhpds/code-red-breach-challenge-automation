@@ -11,3 +11,4 @@ code_red_breach_challenge_argo_customize_argo_user_password: "{{ common_password
 code_red_breach_challenge_argo_customize_stackrox_namespace: stackrox
 code_red_breach_challenge_argo_customize_stackrox_admin_user: gitea
 code_red_breach_challenge_argo_customize_stackrox_admin_password: "{{ common_password }}"
+code_red_breach_challenge_argo_customize_pipeline_chunk_size: 5

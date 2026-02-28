@@ -46,11 +46,3 @@
   - user-pod-rolebinding.yml.j2
   vars:
     index: "{{ n | int + 1 }}"
-
-- name: Run pipeline run
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'pipeline-run.yml.j2') | from_yaml }}"
-    namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
-  vars:
-    index: "{{ n | int + 1 }}"

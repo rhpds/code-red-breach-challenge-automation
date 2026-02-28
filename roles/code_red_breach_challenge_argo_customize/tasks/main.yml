@@ -92,3 +92,9 @@
     loop_var: n
   vars:
     index: "{{ n | int + 1 }}"
+
+- name: Run pipeline runs in chunks of {{ code_red_breach_challenge_argo_customize_pipeline_chunk_size }}
+  include_tasks: run_pipeline_runs_chunked.yml
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, code_red_breach_challenge_argo_customize_pipeline_chunk_size | int) | list }}"
+  loop_control:
+    loop_var: chunk_start
