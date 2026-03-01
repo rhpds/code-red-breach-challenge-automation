@@ -41,6 +41,10 @@
   ansible.builtin.include_tasks:
     file: ./setup_tekton_chains.yml
 
+- name: Setup Nexus Maven Repository
+  ansible.builtin.include_tasks:
+    file: ./setup_nexus.yml
+
 - name: Setup CycloneDX Repository
   ansible.builtin.include_tasks:
     file: ./setup_cyclonedx_repo_server.yml

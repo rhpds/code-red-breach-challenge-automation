@@ -1,0 +1,39 @@
+---
+- name: Deploy Nexus Maven Repository
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'nexus-deployment.yml.j2') | from_yaml_all }}"
+
+- name: Wait for Nexus deployment to be ready
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
+    name: nexus
+    namespace: nexus
+  register: nexus_deployment
+  retries: 60
+  delay: 10
+  until:
+    - nexus_deployment.resources | length > 0
+    - nexus_deployment.resources[0].status is defined
+    - nexus_deployment.resources[0].status.availableReplicas is defined
+    - nexus_deployment.resources[0].status.availableReplicas == 1
+
+- name: Get Nexus route
+  kubernetes.core.k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    name: nexus
+    namespace: nexus
+  register: nexus_route
+
+- name: Display Nexus information
+  ansible.builtin.debug:
+    msg:
+      - "Nexus deployed successfully!"
+      - "External URL: https://{{ nexus_route.resources[0].spec.host }}"
+      - "Internal URL: http://nexus.nexus.svc.cluster.local:8081"
+      - "Maven Mirror URL: http://nexus.nexus.svc.cluster.local:8081/repository/maven-public/"
+      - ""
+      - "Initial admin password will be available in the pod:"
+      - "  oc exec -n nexus deployment/nexus -- cat /nexus-data/admin.password"
