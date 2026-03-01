@@ -18,11 +18,11 @@ fi
 
 EXTERNAL_ENTITY_ID=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_stackrox_admin_user }}:{{ code_red_breach_challenge_argo_customize_stackrox_admin_password }} \
   "https://{{ code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/networkbaseline/${DEPLOYMENT_ID}/status/external" | \
-  jq -r '((.anomolous // []) + (.baseline // []))[] | select(.peer.entity.type == "EXTERNAL_SOURCE" and .peer.protocol == "L4_PROTOCOL_TCP").peer.entity.id' | \
+  jq -r '((.anomalous // []) + (.baseline // []))[] | select(.peer.entity.type == "EXTERNAL_SOURCE" and .peer.protocol == "L4_PROTOCOL_TCP").peer.entity.id' | \
   head -1)
 
 if [ -z "${EXTERNAL_ENTITY_ID}" ]; then
-  echo "Failed to get external entity ID from anomolous or baseline"
+  echo "Failed to get external entity ID from anomalous or baseline"
   exit 1
 fi
 
