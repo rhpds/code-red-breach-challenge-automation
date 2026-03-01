@@ -8,6 +8,7 @@
   loop: "{{ range(chunk_start, [chunk_start + code_red_breach_challenge_argo_customize_pipeline_chunk_size | int, code_red_breach_challenge_argo_customize_num_users | int] | min, 1) | list }}"
   loop_control:
     loop_var: n
+    pause: 5
   vars:
     index: "{{ n | int + 1 }}"
 
