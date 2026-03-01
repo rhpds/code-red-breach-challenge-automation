@@ -34,10 +34,10 @@
 - name: Get Nexus admin password from pod
   ansible.builtin.shell: |
     oc exec -n nexus $(oc get pod -n nexus -l app=nexus -o jsonpath='{.items[0].metadata.name}') -- cat /nexus-data/admin.password
-  register: nexus_admin_password
+  register: r_nexus_admin_password
   retries: 30
   delay: 10
-  until: nexus_admin_password.rc == 0
+  until: r_nexus_admin_password.rc == 0
   delegate_to: bastion
 
 - name: Wait for Nexus API to be ready
@@ -56,7 +56,7 @@
     url: "{{ nexus_url }}/service/rest/v1/repositories/maven/proxy"
     method: POST
     user: admin
-    password: "{{ nexus_admin_password.stdout }}"
+    password: "{{ r_nexus_admin_password.stdout }}"
     force_basic_auth: yes
     body_format: json
     status_code: [201, 204]
@@ -91,7 +91,7 @@
     url: "{{ nexus_url }}/service/rest/v1/repositories/maven/group/maven-public"
     method: PUT
     user: admin
-    password: "{{ nexus_admin_password.stdout }}"
+    password: "{{ r_nexus_admin_password.stdout }}"
     force_basic_auth: yes
     body_format: json
     status_code: [200, 204]
@@ -120,7 +120,7 @@
       - ""
       - "Admin Credentials:"
       - "  Username: admin"
-      - "  Password: {{ nexus_admin_password.stdout }}"
+      - "  Password: {{ r_nexus_admin_password.stdout }}"
       - ""
       - "Red Hat repositories configured:"
       - "  - redhat-ga: https://maven.repository.redhat.com/ga/"
