@@ -38,6 +38,7 @@
   retries: 30
   delay: 10
   until: nexus_admin_password.rc == 0
+  delegate_to: bastion
 
 - name: Wait for Nexus API to be ready
   ansible.builtin.uri:
