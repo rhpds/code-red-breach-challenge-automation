@@ -56,16 +56,14 @@ spec:
     - emptyDir: {}
       name: reports
     - name: source-folder
-      volumeClaimTemplate:
-        metadata:
-          creationTimestamp: null
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi
-        status: {}
+      persistentVolumeClaim:
+        claimName: pvc-git-sources
+    - name: sshkey
+      secret:
+        secretName: customers-ssh-git
+    - name: maven-local
+      persistentVolumeClaim:
+        claimName: pvc-maven-local   
     - emptyDir: {}
       name: maven-settings
     - name: docker-config
