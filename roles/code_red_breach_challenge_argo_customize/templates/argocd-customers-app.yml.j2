@@ -19,7 +19,7 @@ spec:
       - name: image.tag
         value: latest
       - name: "pipeline.ssh.keypath"
-        value: "ctf/sshkey"
+        value: "apps/identities"
   destination:
     server: https://kubernetes.default.svc
     namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
