@@ -12,6 +12,8 @@ code_red_breach_challenge_bootstrap_trusted_artifact_signer_namespace: trusted-a
 code_red_breach_challenge_bootstrap_cyclonedx_namespace: cyclonedx
 code_red_breach_challenge_bootstrap_remote_ripper_image: quay.io/rhn-gps-mthirion/ripper:latest
 code_red_breach_challenge_bootstrap_remote_ripper_port: 8500
+code_red_breach_challenge_bootstrap_remote_hackerapp_image: quay.io/rhn-gps-mthirion/hackerapp:latest
+code_red_breach_challenge_bootstrap_remote_hackerapp_port: 5432
 code_red_breach_challenge_bootstrap_num_users: "{{ num_users | default(0) }}"
 code_red_breach_challenge_bootstrap_user_name_base: user
 
