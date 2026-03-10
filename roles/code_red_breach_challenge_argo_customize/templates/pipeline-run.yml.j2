@@ -1,3 +1,26 @@
+---                                                                           
+apiVersion: v1
+kind: PersistentVolumeClaim                                                   
+metadata:       
+  name: pvc-git-sources
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-maven-local
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
