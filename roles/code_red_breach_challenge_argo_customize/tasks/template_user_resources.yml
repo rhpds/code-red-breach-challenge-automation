@@ -36,13 +36,13 @@
 #  - "{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}-customers-manifests"
 #  - "{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}-env-manifests"
 
-- name: Apply pod role & role binding for each user
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', item) | from_yaml }}"
-    namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
-  loop:
-  - pod-role.yml.j2
-  - user-pod-rolebinding.yml.j2
-  vars:
-    index: "{{ n | int + 1 }}"
+#- name: Apply pod role & role binding for each user
+#  kubernetes.core.k8s:
+#    state: present
+#    definition: "{{ lookup('template', item) | from_yaml }}"
+#    namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+#  loop:
+#  - pod-role.yml.j2
+#  - user-pod-rolebinding.yml.j2
+#  vars:
+#    index: "{{ n | int + 1 }}"
