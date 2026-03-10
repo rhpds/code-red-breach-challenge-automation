@@ -1,0 +1,8 @@
+- name: Create CM to contain bastion host for the app of all users
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'app-cm.yml.j2') | from_yaml }}"
+    namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int) | list }}"
+  vars:
+    index: "{{ n | int + 1 }}"
