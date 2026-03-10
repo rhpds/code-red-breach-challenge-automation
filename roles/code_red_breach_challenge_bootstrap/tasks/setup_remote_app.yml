@@ -47,7 +47,7 @@
     ansible.builtin.shell: |
       dnf install -y podman python3-pip
       pip3 install podman-compose python-dotenv
-      cat <<EOF > /root/compose.yml
+      cat <<EOF > /root/compose-ripper.yml
       version: "3.8"
 
       services:
@@ -58,7 +58,12 @@
             - "8500:8080"
           environment:
             - JAVA_APP_JAR=/deployments/quarkus-run.jar
-          restart: unless-stopped
+          restart: unless-stopped       
+      EOF
+      cat <<EOF > /root/compose-hackerapp.yml
+      version: "3.8"
+
+      services:
         hackerapp:
           image: {{ code_red_breach_challenge_bootstrap_remote_hackerapp_image }}
           container_name: hackerapp
@@ -67,7 +72,7 @@
           environment:
             - JAVA_APP_JAR=/deployments/quarkus-run.jar
           restart: unless-stopped          
-      EOF
+      EOF      
     delegate_to: ripper
 
   - name: Create the ripper systemd service
