@@ -7,6 +7,9 @@
     code_red_breach_challenge_argo_customize_quay_server: quay-{{ guid }}.{{ openshift_cluster_ingress_domain }}
     code_red_breach_challenge_argo_customize_stackrox_endpoint: central-{{ code_red_breach_challenge_argo_customize_stackrox_namespace }}.{{ openshift_cluster_ingress_domain }}
 
+- name: Create Admin NetworkPolicy
+  include_tasks: create_admin_networkpolicy.yml
+    
 - name: Apply user based templating
   include_tasks: template_user_resources.yml
   loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
