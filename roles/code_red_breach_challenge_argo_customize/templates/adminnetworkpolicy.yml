@@ -1,0 +1,28 @@
+apiVersion: policy.networking.k8s.io/v1alpha1
+kind: AdminNetworkPolicy
+metadata:
+  name: allow-infra-egress
+spec:
+  # Priority 0-1000. 0 is the highest.
+  # Using 10 leaves room for "Global Deny" rules at 0-9.
+  priority: 10
+
+  # This targets all pods in all namespaces
+  subject:
+    namespaces: {}
+
+  egress:
+    - name: allow-dns-and-api
+      action: Allow
+      to:
+        - networks:
+            - 0.0.0.0/0 # Allows the internal cluster network
+          ports:
+            - port: 53
+              protocol: UDP
+            - port: 53
+              protocol: TCP
+            - port: 443
+              protocol: TCP
+            - port: 6443
+              protocol: TCP
