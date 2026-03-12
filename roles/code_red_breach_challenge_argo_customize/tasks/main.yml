@@ -7,6 +7,9 @@
     code_red_breach_challenge_argo_customize_quay_server: quay-{{ guid }}.{{ openshift_cluster_ingress_domain }}
     code_red_breach_challenge_argo_customize_stackrox_endpoint: central-{{ code_red_breach_challenge_argo_customize_stackrox_namespace }}.{{ openshift_cluster_ingress_domain }}
 
+- name: Create Admin NetworkPolicy
+  include_tasks: create_admin_networkpolicy.yml
+    
 - name: Apply user based templating
   include_tasks: template_user_resources.yml
   loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
@@ -17,16 +20,13 @@
   ansible.builtin.pause:
     minutes: 2
 
-- name: Create CM for all users
-  include_tasks: create_bastion_cm.yml  
-
-#- name: Run pipeline runs in chunks
-#  include_tasks: run_pipeline_runs_chunked.yml
-#  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, code_red_breach_challenge_argo_customize_pipeline_chunk_size | int) | list }}"
-#  loop_control:
-#    loop_var: chunk_start
-#  vars:
-#    code_red_breach_challenge_argo_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
+- name: Run pipeline runs in chunks
+  include_tasks: run_pipeline_runs_chunked.yml
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, code_red_breach_challenge_argo_customize_pipeline_chunk_size | int) | list }}"
+  loop_control:
+    loop_var: chunk_start
+  vars:
+    code_red_breach_challenge_argo_customize_apps_subdomain: "{{ openshift_cluster_ingress_domain }}"
 
 - name: Create leaderboard application
   include_tasks: apply_leaderboard_templating.yml

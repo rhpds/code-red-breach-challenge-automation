@@ -15,11 +15,12 @@
   - r_cidr.stdout | length > 0
   retries: 30
   delay: 120
+  ignore_errors: true
   delegate_to: bastion
 
 - name: Set CIDR value
   ansible.builtin.set_fact:
-    code_red_breach_challenge_argo_customize_cidr: "{{ r_cidr.stdout }}"
+    code_red_breach_challenge_argo_customize_cidr: "{{ r_cidr.stdout | default('0.0.0.0', true) }}"
 
 - name: Clone leaderboard-gitops
   ansible.builtin.git:

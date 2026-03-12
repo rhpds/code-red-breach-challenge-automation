@@ -12,12 +12,11 @@ metadata:
 spec:
   params:
     - name: source-repo
-      value: https://{{ code_red_breach_challenge_argo_customize_gitea_endpoint }}/{{
-        code_red_breach_challenge_argo_customize_gitea_admin_user }}/customers-app.git
+      value: https://github.com/mthirion/ctf-test-private.git
     - name: source-branch
       value: main
     - name: output-image
-      value: {{ code_red_breach_challenge_argo_customize_quay_server }}/quayadmin/customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+      value: {{ code_red_breach_challenge_argo_customize_quay_server }}/quayadmin/customers-pwned-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
     - name: sonarqube-host-url
       value: 'https://sonarqube-sonarqube.{{ openshift_cluster_ingress_domain }}'
     - name: sonarqube-project-key

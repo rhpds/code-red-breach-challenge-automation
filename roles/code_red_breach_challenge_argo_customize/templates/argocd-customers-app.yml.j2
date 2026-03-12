@@ -19,7 +19,7 @@ spec:
       - name: image.tag
         value: latest
       - name: "pipeline.ssh.keypath"
-        value: "apps/CTF{identities}"
+        value: "secrets/apps/CTF{identities}"
         forceString: true
   destination:
     server: https://kubernetes.default.svc
