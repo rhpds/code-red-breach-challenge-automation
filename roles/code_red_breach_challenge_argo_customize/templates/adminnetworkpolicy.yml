@@ -17,12 +17,3 @@ spec:
       to:
         - networks:
             - 0.0.0.0/0 # Allows the internal cluster network
-          ports:
-            - port: 53
-              protocol: UDP
-            - port: 53
-              protocol: TCP
-            - port: 443
-              protocol: TCP
-            - port: 6443
-              protocol: TCP
