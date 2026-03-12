@@ -103,13 +103,13 @@
       state: started
     delegate_to: ripper
 
-  - name: Enable hackerapp systemd service
-    become: true
-    ansible.builtin.service:
-      name: hackerapp.service
-      enabled: true
-      state: started
-    delegate_to: ripper    
+#  - name: Enable hackerapp systemd service
+#    become: true
+#    ansible.builtin.service:
+#      name: hackerapp.service
+#      enabled: true
+#      state: started
+#    delegate_to: ripper    
 
   environment:
     ANSIBLE_HOST_KEY_CHECKING: "False"
