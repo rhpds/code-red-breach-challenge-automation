@@ -1,3 +1,6 @@
+echo "10.12.0.0/13"
+exit 0
+
 CLUSTER_ID=$(curl -ks -u {{ code_red_breach_challenge_argo_customize_stackrox_admin_user }}:{{ code_red_breach_challenge_argo_customize_stackrox_admin_password }} \
   https://{{ code_red_breach_challenge_argo_customize_stackrox_endpoint }}/v1/clusters?query=Cluster:production | \
   jq -r '.clusters[] | select(.name=="production").id')
