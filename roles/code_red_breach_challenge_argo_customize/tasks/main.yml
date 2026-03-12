@@ -9,6 +9,9 @@
 
 - name: Create Admin NetworkPolicy
   include_tasks: create_admin_networkpolicy.yml
+
+- name: Create Bastion ConfigMap
+  include_tasks: create_bastion_cm.yml  
     
 - name: Apply user based templating
   include_tasks: template_user_resources.yml
