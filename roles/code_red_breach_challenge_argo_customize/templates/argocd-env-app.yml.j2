@@ -10,6 +10,10 @@ spec:
       code_red_breach_challenge_argo_customize_gitea_admin_user }}/{{ code_red_breach_challenge_argo_customize_gitea_user_name_base }}{{ index }}-env-gitops.git
     targetRevision: HEAD
     path: .
+    helm:
+      valuesObject:
+        app:
+          bastionIp: {{ _hacker_app_ip }}
   destination:
     server: https://kubernetes.default.svc
     namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
