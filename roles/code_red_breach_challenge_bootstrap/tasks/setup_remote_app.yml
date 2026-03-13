@@ -47,7 +47,7 @@
     ansible.builtin.shell: |
       dnf install -y podman python3-pip
       pip3 install podman-compose python-dotenv
-      cat <<EOF > /root/compose-hackerapp.yml
+      cat <<EOF > /root/compose.yml
       version: "3.8"
 
       services:
