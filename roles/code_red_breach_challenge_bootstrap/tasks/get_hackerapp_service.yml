@@ -11,7 +11,7 @@
 
 - name: Extract LoadBalancer IP
   ansible.builtin.set_fact:
-    lb_ip: "{{ r_hacker_app_service.resources[0].status.loadBalancer.ingress[0].ip }}"
+    _hacker_app_ip: "{{ r_hacker_app_service.resources[0].status.loadBalancer.ingress[0].ip }}"
   when:
   - r_hacker_app_service.resources | length > 0
   - r_hacker_app_service.resources[0].status.loadBalancer.ingress is defined
