@@ -51,15 +51,15 @@
       version: "3.8"
 
       services:
-        ripper:
+        hackerapp:
           image: {{ code_red_breach_challenge_bootstrap_remote_hackerapp_image }}
           container_name: hackerapp
           ports:
             - "5432:8080"
           environment:
             - JAVA_APP_JAR=/deployments/quarkus-run.jar
-          restart: unless-stopped       
-      EOF     
+          restart: unless-stopped
+      EOF
     delegate_to: ripper
 
   - name: Create the hackerapp systemd service
