@@ -57,9 +57,6 @@
   block:
   - ansible.builtin.include_tasks: get_hackerapp_service.yml
  
-- name: Create Bastion ConfigMap
-  include_tasks: create_bastion_cm.yml 
- 
 #- name: Setup job runner
 #  ansible.builtin.include_tasks:
 #    file: ./setup_job_runner.yml
