@@ -50,12 +50,12 @@
     file: ./setup_cyclonedx_repo_server.yml
 
 - name: Setup remote app
-  block:
-  - ansible.builtin.include_tasks: setup_remote_app.yml
+  ansible.builtin.include_tasks:
+    file: ./setup_remote_app.yml
 
 - name: Get remote app External IP
-  block:
-  - ansible.builtin.include_tasks: get_hackerapp_service.yml
+  ansible.builtin.include_tasks:
+    file: ./setup_hackerapp_config.yml
  
 #- name: Setup job runner
 #  ansible.builtin.include_tasks:
