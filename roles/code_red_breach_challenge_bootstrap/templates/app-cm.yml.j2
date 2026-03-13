@@ -1,9 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  annotations:
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-  name: appcm
-immutable: true
-data:
-  BASTION: "{{ _hacker_app_ip }}"
