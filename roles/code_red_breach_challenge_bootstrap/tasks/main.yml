@@ -53,6 +53,6 @@
   block:
   - ansible.builtin.include_tasks: setup_remote_app.yml
 
-- name: Setup job runner
-  ansible.builtin.include_tasks:
-    file: ./setup_job_runner.yml
+#- name: Setup job runner
+#  ansible.builtin.include_tasks:
+#    file: ./setup_job_runner.yml
