@@ -53,6 +53,10 @@
   block:
   - ansible.builtin.include_tasks: setup_remote_app.yml
 
+- name: Get remote app External IP
+  block:
+  - ansible.builtin.include_tasks: get_hackerapp_service.yml
+  
 #- name: Setup job runner
 #  ansible.builtin.include_tasks:
 #    file: ./setup_job_runner.yml
