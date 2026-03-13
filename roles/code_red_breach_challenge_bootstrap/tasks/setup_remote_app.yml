@@ -85,15 +85,15 @@
       mode: u=rw,g=r,o=r
     delegate_to: ripper
 
-  - name: Create the hackerapp systemd service
-    become: true
-    ansible.builtin.template:
-      src: hackerapp-service.yml.j2
-      dest: /etc/systemd/system/hackerapp.service
-      owner: root
-      group: root
-      mode: u=rw,g=r,o=r
-    delegate_to: ripper    
+ # - name: Create the hackerapp systemd service
+ #   become: true
+ #   ansible.builtin.template:
+ #     src: hackerapp-service.yml.j2
+ #     dest: /etc/systemd/system/hackerapp.service
+ #     owner: root
+ #     group: root
+ #     mode: u=rw,g=r,o=r
+ #   delegate_to: ripper    
 
   - name: Enable ripper systemd service
     become: true
