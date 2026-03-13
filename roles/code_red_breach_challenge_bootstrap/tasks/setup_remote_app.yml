@@ -51,9 +51,9 @@
       version: "3.8"
 
       services:
-        ripper:
-          image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
-          container_name: ripper
+        hackerapp:
+          image: {{ code_red_breach_challenge_bootstrap_remote_hackerapp_image }}
+          container_name: hackerapp
           ports:
             - "5432:8080"
           environment:
