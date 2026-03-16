@@ -45,6 +45,8 @@ spec:
       value: admin
     - name: oidc-issuer
       value: 'https://sso.{{ openshift_cluster_ingress_domain }}/realms/sso'
+    - name: trigger
+      value: 'manual'      
   pipelineRef:
     name: customers-build
   taskRunTemplate:
