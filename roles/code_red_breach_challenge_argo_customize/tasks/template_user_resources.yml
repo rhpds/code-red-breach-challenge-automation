@@ -48,3 +48,14 @@
   - user-view-rolebinding.yml.j2  
   vars:
     index: "{{ n | int + 1 }}"
+
+- name: Apply argocd role for the piepeline SA of each user
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', item) | from_yaml }}"
+    namespace: openshift-gitops
+  loop:
+  - pipeline-argocd-role.yml
+  - pipeline-argocd-rolebinding.yml.j2
+  vars:
+    index: "{{ n | int + 1 }}"
