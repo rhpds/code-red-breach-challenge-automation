@@ -49,7 +49,7 @@
   vars:
     index: "{{ n | int + 1 }}"
 
-- name: Apply argocd role for the piepeline SA of each user
+- name: Apply argocd role for the pipeline SA of each user
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', item) | from_yaml }}"
