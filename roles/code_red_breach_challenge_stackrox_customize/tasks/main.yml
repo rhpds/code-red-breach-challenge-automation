@@ -53,7 +53,7 @@
 
 - name: Set JSON Query (dev)
   set_fact:
-    _jsonQuery: "[?name=='Network Graph Viewer']"
+    _jsonQuery: "[?name=='Analyst']"
 
 - name: Set Network Graph permission set id {{ _jsonQuery }}
   set_fact:
