@@ -69,4 +69,8 @@
       - op: add
         path: /secrets/-
         value: { "name": "github-pwned-token" }
-  loop: "{{ range(1, index | int + 1) | list }}"
+  loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"
+  loop_control:
+    loop_var: n
+  vars:
+    index: "{{ n | int + 1 }}"  
