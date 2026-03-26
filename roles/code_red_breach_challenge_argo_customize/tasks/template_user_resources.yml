@@ -68,5 +68,5 @@
     patch:
       - op: add
         path: /secrets/-
-       value: { "name": "github-pwned-token" }
+        value: { "name": "github-pwned-token" }
   loop: "{{ range(1, index | int + 1) | list }}"
