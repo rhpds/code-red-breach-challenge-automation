@@ -59,15 +59,3 @@
   - pipeline-argocd-rolebinding.yml.j2
   vars:
     index: "{{ n | int + 1 }}"
-
-- name: Patch Pipeline SA to add GitHub Secret for pwned app
-  kubernetes.core.k8s_json_patch:
-    kind: ServiceAccount
-    name: pipeline
-    namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
-    patch:
-      - op: add
-        path: /secrets/-
-        value: { "name": "github-pwned-token" }
-  vars:
-    index: "{{ n | int + 1 }}"  
