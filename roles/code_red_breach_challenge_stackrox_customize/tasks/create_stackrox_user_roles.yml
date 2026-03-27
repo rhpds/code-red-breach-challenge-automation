@@ -33,9 +33,9 @@
 #      accessScopeId: "{{ r_as_response.json.id }}"
 #    validate_certs: false
 
-- name: Create zccess scope role with custom role
+- name: Create access scope with custom role
   uri:
-    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/roles/CTF-Custom-Role-{{ code_red_breach_challenge_stackrox_customize_username }}"
+    url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/roles/network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}"
     user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
     password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
     force_basic_auth: true
