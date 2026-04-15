@@ -4,23 +4,23 @@ code_red_breach_challenge_gitea_customize_gitea_admin_user: gitea
 code_red_breach_challenge_gitea_customize_gitea_admin_password: AVo2zmNf34KptdHe #notsecret
 code_red_breach_challenge_gitea_customize_gitea_public_repos:
 - name: customers-app
-  url: https://github.com/mthirion/lb1153-customers-app.git
+  url: https://github.com/rhpds/code-red-breach-challenge-customers-app.git
   per_user: false
   private: false
 - name: customers-gitops
-  url: https://github.com/mthirion/lb1153-customers-gitops.git
-  per_user: true
-  private: true
-- name: pipeline-gitops
-  url: https://github.com/treddy08/lb1153-pipeline-gitops.git
+  url: https://github.com/rhpds/code-red-breach-challenge-customers-gitops.git
   per_user: true
   private: true
 - name: env-gitops
-  url: https://github.com/mthirion/lb1153-env-gitops.git
+  url: https://github.com/rhpds/code-red-breach-challenge-env-gitops.git
+  per_user: true
+  private: true
+- name: pipeline-gitops
+  url: https://github.com/rhpds/code-red-breach-challenge-pipeline-gitops.git
   per_user: true
   private: true
 - name: leaderboard-gitops
-  url: https://github.com/mthirion/lb1153-leaderboard-gitops.git
+  url: https://github.com/rhpds/code-red-breach-challenge-leaderboard-gitops.git
   per_user: false
   private: true
 code_red_breach_challenge_gitea_customize_gitea_num_users: "{{ num_users | default(3) }}"
