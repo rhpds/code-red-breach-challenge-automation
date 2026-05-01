@@ -51,6 +51,23 @@
       roleName: network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}
     validate_certs: false
 
+- name: Create User object if it doesn't exist
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: user.openshift.io/v1
+      kind: User
+      metadata:
+        name: "{{ code_red_breach_challenge_stackrox_customize_username }}"
+  delegate_to: bastion
+
+- name: Get User UID
+  kubernetes.core.k8s_info:
+    kind: User
+    name: "{{ code_red_breach_challenge_stackrox_customize_username }}"
+  register: r_user_info
+  delegate_to: bastion
+
 - name: Pre-authorize OAuth for user (skip consent screen)
   kubernetes.core.k8s:
     state: present
@@ -66,5 +83,5 @@
       - "user:list-scoped-projects"
       - "user:list-projects"
       userName: "{{ code_red_breach_challenge_stackrox_customize_username }}"
-      userUID: "{{ lookup('k8s', kind='User', resource_name=code_red_breach_challenge_stackrox_customize_username).metadata.uid }}"
+      userUID: "{{ r_user_info.resources[0].metadata.uid }}"
   delegate_to: bastion
