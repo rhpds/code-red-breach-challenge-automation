@@ -51,34 +51,34 @@
       version: "3.8"
 
       services:
-        ripper:
-          image: {{ code_red_breach_challenge_bootstrap_remote_ripper_image }}
-          container_name: ripper
+        hackerapp:
+          image: {{ code_red_breach_challenge_bootstrap_remote_hackerapp_image }}
+          container_name: hackerapp
           ports:
-            - "8500:8080"
+            - "5432:8080"
           environment:
             - JAVA_APP_JAR=/deployments/quarkus-run.jar
           restart: unless-stopped
       EOF
     delegate_to: ripper
 
-  - name: Create the ripper systemd service
+  - name: Create the hackerapp systemd service
     become: true
     ansible.builtin.template:
-      src: ripper-service.yml.j2
-      dest: /etc/systemd/system/ripper.service
+      src: hackerapp-service.yml.j2
+      dest: /etc/systemd/system/hackerapp.service
       owner: root
       group: root
       mode: u=rw,g=r,o=r
     delegate_to: ripper
 
-  - name: Enable ripper systemd service
+  - name: Enable hackerapp systemd service
     become: true
     ansible.builtin.service:
-      name: ripper.service
+      name: hackerapp.service
       enabled: true
       state: started
     delegate_to: ripper
-
+ 
   environment:
     ANSIBLE_HOST_KEY_CHECKING: "False"

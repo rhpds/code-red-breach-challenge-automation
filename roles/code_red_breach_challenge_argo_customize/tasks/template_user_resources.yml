@@ -42,7 +42,18 @@
     definition: "{{ lookup('template', item) | from_yaml }}"
     namespace: customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
   loop:
-  - pod-role.yml.j2
-  - user-pod-rolebinding.yml.j2
+  - view-role.yml.j2
+  - user-view-rolebinding.yml.j2  
+  vars:
+    index: "{{ n | int + 1 }}"
+
+- name: Apply argocd role for the pipeline SA of each user
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', item) | from_yaml }}"
+    namespace: openshift-gitops
+  loop:
+  - pipeline-argocd-role.yml
+  - pipeline-argocd-rolebinding.yml.j2
   vars:
     index: "{{ n | int + 1 }}"

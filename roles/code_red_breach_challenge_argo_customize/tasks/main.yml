@@ -7,6 +7,30 @@
     code_red_breach_challenge_argo_customize_quay_server: quay-{{ guid }}.{{ openshift_cluster_ingress_domain }}
     code_red_breach_challenge_argo_customize_stackrox_endpoint: central-{{ code_red_breach_challenge_argo_customize_stackrox_namespace }}.{{ openshift_cluster_ingress_domain }}
 
+- name: Create Admin NetworkPolicy
+  include_tasks: create_admin_networkpolicy.yml
+
+- name: Get hacker-app service
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Service
+    name: hacker-app
+    namespace: "{{ sandbox_openshift_namespace }}"
+    host: "{{ sandbox_openshift_api_url }}"
+    api_key: "{{ sandbox_openshift_api_key }}"
+    validate_certs: false
+  register: r_hacker_app_service
+
+- name: Extract LoadBalancer IP
+  ansible.builtin.set_fact:
+    _hacker_app_ip: "{{ r_hacker_app_service.resources[0].status.loadBalancer.ingress[0].ip }}"
+  when:
+  - r_hacker_app_service.resources | length > 0
+  - r_hacker_app_service.resources[0].status.loadBalancer.ingress is defined
+  - r_hacker_app_service.resources[0].status.loadBalancer.ingress | length > 0
+  retries: 10
+  delay: 20
+
 - name: Apply user based templating
   include_tasks: template_user_resources.yml
   loop: "{{ range(0, code_red_breach_challenge_argo_customize_num_users | int, 1) | list }}"

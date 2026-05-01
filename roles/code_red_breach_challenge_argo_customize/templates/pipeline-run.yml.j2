@@ -4,20 +4,19 @@ metadata:
   annotations:
     chains.tekton.dev/signed: 'true'
     chains.tekton.dev/transparency: 'http://rekor-server.trusted-artifact-signer.svc/api/v1/log/entries?logIndex=23'
-  name: pipelinerun-101
+  name: customers-pipelinerun-101
   labels:
     backstage.io/kubernetes-id: customers
-    tekton.dev/pipeline: customers-build
+    tekton.dev/pipeline: customers-pipeline
     type: pipeline
 spec:
   params:
     - name: source-repo
-      value: https://{{ code_red_breach_challenge_argo_customize_gitea_endpoint }}/{{
-        code_red_breach_challenge_argo_customize_gitea_admin_user }}/customers-app.git
+      value: https://github.com/mthirion/code-red-breach-challenge-customers-pwned-app.git
     - name: source-branch
       value: main
     - name: output-image
-      value: {{ code_red_breach_challenge_argo_customize_quay_server }}/quayadmin/customers-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
+      value: {{ code_red_breach_challenge_argo_customize_quay_server }}/quayadmin/customers-pwned-{{ code_red_breach_challenge_argo_customize_argo_user_name_base }}{{ index }}
     - name: sonarqube-host-url
       value: 'https://sonarqube-sonarqube.{{ openshift_cluster_ingress_domain }}'
     - name: sonarqube-project-key
@@ -46,8 +45,10 @@ spec:
       value: admin
     - name: oidc-issuer
       value: 'https://sso.{{ openshift_cluster_ingress_domain }}/realms/sso'
+    - name: trigger
+      value: 'pipelinerun'      
   pipelineRef:
-    name: customers-build
+    name: customers-pipeline
   taskRunTemplate:
     serviceAccountName: pipeline
   timeouts:

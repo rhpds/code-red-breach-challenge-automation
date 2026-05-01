@@ -50,9 +50,6 @@
     file: ./setup_cyclonedx_repo_server.yml
 
 - name: Setup remote app
-  block:
-  - ansible.builtin.include_tasks: setup_remote_app.yml
-
-- name: Setup job runner
   ansible.builtin.include_tasks:
-    file: ./setup_job_runner.yml
+    file: ./setup_remote_app.yml
+

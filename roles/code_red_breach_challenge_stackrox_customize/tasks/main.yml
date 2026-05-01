@@ -34,35 +34,38 @@
   set_fact:
     code_red_breach_challenge_stackrox_customize_auth_provider_id: "{{ r_idp_response.json.id }}"
 
-- name: Get permission sets
+- name: Create custom Permission Set
   uri:
     url: "{{ code_red_breach_challenge_stackrox_customize_stackrox_url }}/v1/permissionsets"
     user: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin }}"
-    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"
-    method: GET
+    password: "{{ code_red_breach_challenge_stackrox_customize_stackrox_admin_password }}"    
+    method: POST
     force_basic_auth: true
-    validate_certs: false
+    validate_certs: false    
     body_format: json
     headers:
       Content-Type: application/json
-    timeout: 60
+    timeout: 60    
+    body:
+      name: "CTF-Custom-view"
+      resourceToAccess:
+        Alert: "READ_ACCESS"
+        NetworkGraph: "READ_ACCESS"
+        NetworkPolicy: "READ_ACCESS"
+        Deployment: "READ_ACCESS"
+        Namespace: "READ_ACCESS"
+        Cluster: "READ_ACCESS"
+    status_code: [200, 409]
   register: r_ps_response
   retries: 5
   delay: 10
-  until: r_ps_response is succeeded
+  until: r_ps_response is succeeded  
 
-- name: Set JSON Query (dev)
+- name: Get the ID of the new Permission Set
   set_fact:
-    _jsonQuery: "[?name=='Network Graph Viewer']"
-
-- name: Set Network Graph permission set id {{ _jsonQuery }}
-  set_fact:
-    code_red_breach_challenge_stackrox_customize_network_graph_viewer_permission_set_id: "{{ selected[0].id }}"
-  vars:
-    selected: >-
-      {{
-        r_ps_response.json.permissionSets | json_query(_jsonQuery)
-      }}
+    code_red_breach_challenge_stackrox_customize_network_graph_viewer_permission_set_id: "{{ r_ps_response.json.id if r_ps_response.status == 200 else (r_ps_response.json.permissionSets | selectattr('name', 'equalto', 'CTF-Custom-View') | map(attribute='id') | first) }}"
+    
+# -----------------------
 
 - name: Create default 'None' group
   uri:
