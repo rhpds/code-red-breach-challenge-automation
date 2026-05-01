@@ -50,3 +50,20 @@
         value: "{{ code_red_breach_challenge_stackrox_customize_username }}"
       roleName: network-graph-viewer-{{ code_red_breach_challenge_stackrox_customize_username }}
     validate_certs: false
+
+- name: Pre-authorize OAuth for user (skip consent screen)
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: oauth.openshift.io/v1
+      kind: OAuthClientAuthorization
+      metadata:
+        name: "{{ code_red_breach_challenge_stackrox_customize_username }}:system:serviceaccount:{{ code_red_breach_challenge_stackrox_customize_stackrox_namespace }}:central"
+      clientName: "system:serviceaccount:{{ code_red_breach_challenge_stackrox_customize_stackrox_namespace }}:central"
+      scopes:
+      - "user:info"
+      - "user:check-access"
+      - "user:list-scoped-projects"
+      - "user:list-projects"
+      userName: "{{ code_red_breach_challenge_stackrox_customize_username }}"
+      userUID: "{{ lookup('k8s', kind='User', resource_name=code_red_breach_challenge_stackrox_customize_username).metadata.uid }}"
