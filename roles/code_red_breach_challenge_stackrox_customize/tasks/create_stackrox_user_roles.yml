@@ -26,7 +26,7 @@
     force_basic_auth: true
     method: POST
     headers:
-      Content-Type: "application/json"    
+      Content-Type: "application/json"
     body_format: json
     body:
       permissionSetId: "{{ code_red_breach_challenge_stackrox_customize_network_graph_viewer_permission_set_id }}"
@@ -67,3 +67,4 @@
       - "user:list-projects"
       userName: "{{ code_red_breach_challenge_stackrox_customize_username }}"
       userUID: "{{ lookup('k8s', kind='User', resource_name=code_red_breach_challenge_stackrox_customize_username).metadata.uid }}"
+  delegate_to: bastion
