@@ -59,14 +59,12 @@
       kind: User
       metadata:
         name: "{{ code_red_breach_challenge_stackrox_customize_username }}"
-  delegate_to: bastion
 
 - name: Get User UID
   kubernetes.core.k8s_info:
     kind: User
     name: "{{ code_red_breach_challenge_stackrox_customize_username }}"
   register: r_user_info
-  delegate_to: bastion
 
 - name: Pre-authorize OAuth for user (skip consent screen)
   kubernetes.core.k8s:
@@ -84,4 +82,3 @@
       - "user:list-projects"
       userName: "{{ code_red_breach_challenge_stackrox_customize_username }}"
       userUID: "{{ r_user_info.resources[0].metadata.uid }}"
-  delegate_to: bastion
