@@ -16,10 +16,14 @@
   become: true
   delegate_to: bastion
 
-- name: Create kube config
+- name: Create kube config on bastion
   ansible.builtin.shell: |
     oc login --token {{ openshift_cluster_admin_token }} --server {{ openshift_api_url }} --insecure-skip-tls-verify
   delegate_to: bastion
+
+- name: Create kube config on localhost
+  ansible.builtin.shell: |
+    oc login --token {{ openshift_cluster_admin_token }} --server {{ openshift_api_url }} --insecure-skip-tls-verify
 
 - name: Setup Vault
   ansible.builtin.include_tasks:
